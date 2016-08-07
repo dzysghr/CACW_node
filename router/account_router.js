@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var bll = require('./bll/account_bll')
+var bll = require('../bll/account_bll')
 var bodyParser = require('body-parser')
 
 router.use(bodyParser.urlencoded({ extended: true }));

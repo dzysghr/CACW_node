@@ -1,8 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var checker = require('./util/session-check');
-var user_bll = require('./bll/user_bll');
-
+var checker = require('../util/session-check');
+var user_bll = require('../bll/user_bll');
 var bodyParser = require('body-parser')
 
 // 该路由使用的中间件
@@ -22,10 +21,15 @@ router.get('/:username', function (req, res) {
   user_bll.getUserInfo(req, res);
 });
 
+//获取个人头像
+router.get('/avatar', function (req, res) {
+  user_bll.getUserInfo(req, res);
+});
+
 
 //修改头像
-router.post('/avatar/:id', function (req, res) {
-
+router.post('/upload', function (req, res) {
+    user_bll.setUserAvator(req,res);
 });
 
 //修改个人信息

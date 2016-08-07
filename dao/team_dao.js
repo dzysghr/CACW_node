@@ -87,9 +87,8 @@ function queryTeam(params) {
 }
 
 
-getTeamByid(1).then(t=>{
-   return t.destroy();
-})
+module.exports = {queryTeam,getTeamList,setTeamInfo,addTeamMember,removeTeamMember,getTeamByid,getTeamMembers,createTeam}
+
 
 //获取成员数量
 // function getTeamMemberCount(team)

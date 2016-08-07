@@ -1,16 +1,23 @@
 var express = require('express');
 var router = express.Router();
+var team_bll = require('../bll/team_bll');
+var checker = require('../util/session-check');
 
-// 该路由使用的中间件
+
+//  log中间件
 router.use(function timeLog(req, res, next) {
   console.log('访问团队模块 Time: ', Date.now());
   next();
 });
 
+//检查session 中间件
+router.use(checker())
+
+
 
 //创建团队
 router.post('/create/:teamname', function(req, res) {
-      console.log('Time: ', Date.now());
+    team_bll.createTeam(req,res);
 });
 
 

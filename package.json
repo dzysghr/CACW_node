@@ -1,0 +1,25 @@
+{
+  "name": "cacw",
+  "version": "1.0.0",
+  "description": "cacw server",
+  "main": "1",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "mysql": "^2.11.1",
+    "sequelize": "^3.23.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git"
+  },
+  "keywords": [
+    "cacw"
+  ],
+  "author": "dzy",
+  "license": "Apache-2.0"
+}

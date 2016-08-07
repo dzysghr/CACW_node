@@ -58,7 +58,13 @@ function saveSession(user,session) {
     });
 }
       
-//通过session获得user,返回user promise
+
+/**
+ * 
+ * 通过session获得user
+ * @param {any} session
+ * @returns User or false
+ */
 function getUser(session) {
     return MyModel.Session.findOne({
         where:{

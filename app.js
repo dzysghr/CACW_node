@@ -20,9 +20,13 @@ app.use('/account',account);
 
 app.get('/',function (req,res) {
     
-    res.cookie('id','asdfasdfas');
-    res.send('hello world');
+    //res.cookie('id','asdfasdfas');
+     for(var key in  req.cookies){
+         console.log("cookie名:"+key);
+         console.log("cookie值:"+req.cookies[key]);
+     }
     console.log("应用实例，主机名 ：%s  IP:%s",req.hostname,req.ip);
+    res.send('hello world');    
 })
 
 var server = app.listen(8081,function () {

@@ -31,9 +31,28 @@ function onLogin(req, res) {
     })
 }
 
-function onLogout(req, res) {
 
-    res.send('onLogout');
+
+function onLogout(req, res) {
+    var s =  req.cookies['sessionId'];
+    if(s==undefined)
+    {
+        var body = bodymaker.makeBody(3,'can not found sessionid');
+        res.send(JSON.stringify(body));
+        return ;
+    }
+    account_dao.getUser(s)
+    .then(u=>{
+        if(u)
+        {
+            return account_dao.logout(u);
+        }
+    }).then(()=>{
+        var body = bodymaker.makeBody(0,'succeed');
+        res.send(JSON.stringify(body));
+    }).catch(err=>{
+        res.send(bodymaker.makeErrorJson(1,err));
+    })
 }
 
 function onRegister(req, res) {

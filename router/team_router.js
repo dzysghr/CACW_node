@@ -46,17 +46,13 @@ router.get('/:id', function(req, res) {
 
 });
 
-//查看团队
-router.post('/avatar/:id', function(req, res) {
 
-});
-
-//查看团队
+//获取团队列表
 router.get('/list', function(req, res) {
 
 });
 
-//查看团队
+//删除团队成员
 router.get('/DeleteMember/:id', function(req, res) {
 
 });

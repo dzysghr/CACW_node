@@ -2,16 +2,27 @@ var MyModel = require('./define');
 var Sequelize = MyModel.sequelize;
 
 
-//创建团队，这里一定要传入Model.User 类型的user
+/**
+ * 创建团队
+ * @param {any} user Model.User
+ * @param {any} teamname
+ * @returns t
+ */
 function createTeam(user, teamname) {
     return MyModel.Team.create(
         {
             teamName: teamname,
-            adminId: user.id
+            AdminId: user.id
         }
-    ).then(t => {
-        return MyModel.User.findOne().then(u => {
-            t.addMember(u);
+    ).then(t => 
+    {
+        return MyModel.User.findOne()
+        .then(u => 
+        {
+            return t.addMember(u)
+            .then(() => {
+                return t;
+            });
         })
     });
 }
@@ -40,18 +51,19 @@ function removeTeamMember(teamid, user) {
 
 //增加团队成员
 function addTeamMember(teamid, user) {
-    return getTeamByid(teamid).then(t => {
-        return t.addMember(user);
-    });
+    return getTeamByid(teamid)
+        .then(t => {
+            return t.addMember(user);
+        });
 }
 
 //修改团队资料
-function setTeamInfo(team){
-    return  getTeamByid(team.id).then(t=>{
-        t.summary = team.summary==undefined?t.summary:team.summary;
-        t.teamName = team.teamName==undefined?t.teamName:team.teamName;
-        t.avatarUrl = team.avatarUrl==undefined?t.avatarUrl:team.avatarUrl;
-        t.notice = team.notice==undefined?t.notice:team.noticesummary;
+function setTeamInfo(team) {
+    return getTeamByid(team.id).then(t => {
+        t.summary = team.summary == undefined ? t.summary : team.summary;
+        t.teamName = team.teamName == undefined ? t.teamName : team.teamName;
+        t.avatarUrl = team.avatarUrl == undefined ? t.avatarUrl : team.avatarUrl;
+        t.notice = team.notice == undefined ? t.notice : team.noticesummary;
         return t.save();
     })
 }
@@ -67,27 +79,24 @@ function getTeamList(user) {
 function queryTeam(params) {
     var sql = 'select * from teams where 1=1 or ';
     var flag = false;
-    if(params.id)
-    {
-        sql = sql + 'id = '+params.id+' or ';
+    if (params.id) {
+        sql = sql + 'id = ' + params.id + ' or ';
         flag = true;
     }
-    if(params.teamName)
-    {
-        sql = sql + "teamName like '%"+params.username+"%' or ";
+    if (params.teamName) {
+        sql = sql + "teamName like '%" + params.username + "%' or ";
         flag = true;
     }
-    if(!flag)
-       return new Promise((resolve, reject) => {resolve()});
-    if(flag)
-    {
-        sql +='1=1';
+    if (!flag)
+        return new Promise((resolve, reject) => { resolve() });
+    if (flag) {
+        sql += '1=1';
     }
-    return  Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT})
+    return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }
 
 
-module.exports = {queryTeam,getTeamList,setTeamInfo,addTeamMember,removeTeamMember,getTeamByid,getTeamMembers,createTeam}
+module.exports = { queryTeam, getTeamList, setTeamInfo, addTeamMember, removeTeamMember, getTeamByid, getTeamMembers, createTeam }
 
 
 //获取成员数量

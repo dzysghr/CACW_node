@@ -49,10 +49,7 @@ function setUserAvator(req, res) {
     }
     account_dao.getUser(req.cookies['sessionId'])
         .then(u => {
-
-
-            //var dir = __dirname.lastIndexOf('/')
-
+            
             var form = new formidable.IncomingForm();
             form.uploadDir = +__dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑

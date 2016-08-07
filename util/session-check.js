@@ -1,5 +1,7 @@
 var bodymaker = require('./respone-builder');
 var account_dao = require('../dao/account_dao');
+var MyModel = require('../dao/define');
+
 
 function checker(option) {
     return function check(req, res, next) {
@@ -9,15 +11,19 @@ function checker(option) {
             res.send(bodymaker.makeErrorJson(3, 'can not find sessionId in header'));
             return;
         }
-        account_dao.getUser(s)
-            .then(u => {
-                if (u)
-                    next();
-                else
-                    res.send(bodymaker.makeErrorJson(3, 'you have aleady logout'));
-            }).catch(err => {
-                res.send(bodymaker.makeErrorJson(3, err));
-            })
+        MyModel.Session.findOne({
+            where: {
+                Session: s
+            }
+        }).then(s => {
+            if (s == undefined) {
+                res.send(bodymaker.makeErrorJson(3, 'session expired,you have aleady logout'));
+                return;
+            } else
+                next();
+        }).catch(err => {
+            res.send(bodymaker.makeErrorJson(3, err));
+        })
     }
 };
 module.exports = checker;

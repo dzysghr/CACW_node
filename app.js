@@ -18,13 +18,8 @@ app.use('/project',project);
 app.use('/account',account);
 
 
-app.get('/',function (req,res) {
-    
-    //res.cookie('id','asdfasdfas');
-     for(var key in  req.cookies){
-         console.log("cookie名:"+key);
-         console.log("cookie值:"+req.cookies[key]);
-     }
+app.get('/:id',function (req,res) {
+    console.log(req.params.id);
     console.log("应用实例，主机名 ：%s  IP:%s",req.hostname,req.ip);
     res.send('hello world');    
 })

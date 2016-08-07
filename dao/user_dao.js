@@ -9,10 +9,6 @@ function getUserbyId(userid) {
     })
 }
 
-getUserbyId(1).then(u=>{
-    console.log(u);
-})
-
 function setUserInfo(user) {
     return  getUserbyId(user.id).then(u=>{
         u.nickName = user.nickName==undefined? u.nickName:user.nickName;
@@ -71,3 +67,5 @@ function setAvatarUrl(userid,url) {
             })
     })
 }
+
+module.exports = { getUserbyId,setAvatarUrl,queryUser,setUserInfo}

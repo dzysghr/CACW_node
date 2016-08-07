@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var checker = require('./util/session-check');
-
+var user_bll = require('./bll/user_bll');
 
 
 // 该路由使用的中间件
@@ -15,8 +15,7 @@ router.use(checker())
 
 //个人信息
 router.get('/:id', function (req, res) {
-  console.log(i);
-  res.send(i);
+    user_bll.getUserInfo(req,res);
 });
 
 

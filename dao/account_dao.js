@@ -23,7 +23,7 @@ function login(username,psw){
 }
 
 
-//写入session
+//写入session,返回session
 function saveSession(user,session) {
    return MyModel.Session.findOrCreate(
        {
@@ -38,7 +38,7 @@ function saveSession(user,session) {
         if(!created)
         {
             s.Session = session;
-            s.save({
+           return s.save({
                 fields:['Session']
             });
         }

@@ -41,6 +41,7 @@ function createTask(taskparams, user, projectid) {
     })
 }
 
+//修改任务
 function setTask(params) {
     return MyModel.Task.findOne({ where: { id: params.id } })
         .then(t => {
@@ -82,7 +83,6 @@ function setTaskMember(task, memberids, user) {
 
 //获取任务成员，调用task.getMember()
 //删除任务，调用 task.destroy(),会自动删除成员
-
 
 
 // MyModel.Task.findOne().then(t=>{

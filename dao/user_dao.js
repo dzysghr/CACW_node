@@ -3,23 +3,27 @@ var Sequelize = MyModel.sequelize;
 
 function getUserbyId(userid) {
     return MyModel.User.findOne({
-            where:{
-                id:userid
-            }
+        where: {
+            id: userid
+        }
     })
 }
 
-function setUserInfo(user) {
-    return  getUserbyId(user.id).then(u=>{
-        u.nickName = user.nickName==undefined? u.nickName:user.nickName;
-        u.summary = user.summary==undefined?u.summary:user.summary;
-        u.mobilePhone = user.mobilePhone==undefined?u.mobilePhone:user.mobilePhone;
-        u.sex = user.sex==undefined?u.sex:user.sex;
-        u.address = user.address==undefined?u.address:user.address;
-        u.shortNumber = user.shortNumber==undefined?u.shortNumber:user.shortNumber;
-        u.mobilePhone = user.mobilePhone==undefined?u.mobilePhone:user.mobilePhone;
-        return u.save();
-    })
+
+/**
+ * 修改用户信息
+ * @param {any} user UserModel 
+ * @returns promise
+ */
+function setUserInfo(user, params) {
+    user.nickName = params.nickName == undefined ? user.nickName : params.nickName;
+    user.summary = params.summary == undefined ? user.summary : params.summary;
+    user.mobilePhone = params.mobilePhone == undefined ? user.mobilePhone : params.mobilePhone;
+    user.sex = params.sex == undefined ? user.sex : user.sex;
+    user.address = params.address == undefined ? user.address : params.address;
+    user.shortNumber = params.shortNumber == undefined ? user.shortNumber : params.shortNumber;
+    user.mobilePhone = params.mobilePhone == undefined ? user.mobilePhone : params.mobilePhone;
+    return user.save();
 }
 
 // queryUser({
@@ -32,40 +36,36 @@ function setUserInfo(user) {
 function queryUser(params) {
     var sql = 'select * from Users where 1=1 or ';
     var flag = false;
-    if(params.id)
-    {
-        sql = sql + 'id = '+params.id+' or ';
+    if (params.id) {
+        sql = sql + 'id = ' + params.id + ' or ';
         flag = true;
     }
-    if(params.username)
-    {
-        sql = sql + "username='"+params.username+"' or "
+    if (params.username) {
+        sql = sql + "username='" + params.username + "' or "
         flag = true;
     }
 
-     if(params.nickName)
-    {
-        sql = sql + "nickName like '%"+params.username+"%' or ";
+    if (params.nickName) {
+        sql = sql + "nickName like '%" + params.username + "%' or ";
         flag = true;
     }
-    if(!flag)
-       return new Promise((resolve, reject) => {resolve()});
+    if (!flag)
+        return new Promise((resolve, reject) => { resolve() });
 
-    if(flag)
-    {
-        sql +='1=1';
+    if (flag) {
+        sql += '1=1';
     }
-     return  Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT})
+    return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }
 
 //设置头像
-function setAvatarUrl(userid,url) {
-    return getUserbyId(userid).then(u=>{
-            u.avatarUrl = url; 
-            return u.save({
-                fields:['avatarUrl']
-            })
+function setAvatarUrl(userid, url) {
+    return getUserbyId(userid).then(u => {
+        u.avatarUrl = url;
+        return u.save({
+            fields: ['avatarUrl']
+        })
     })
 }
 
-module.exports = { getUserbyId,setAvatarUrl,queryUser,setUserInfo}
+module.exports = { getUserbyId, setAvatarUrl, queryUser, setUserInfo }

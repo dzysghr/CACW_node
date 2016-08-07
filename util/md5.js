@@ -1,3 +1,5 @@
+
+var hex_chr = '0123456789abcdbd';
 function rhex(num) {
     str = "";
     for (j = 0; j <= 3; j++)

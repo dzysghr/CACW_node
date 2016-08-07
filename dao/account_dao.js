@@ -1,8 +1,15 @@
 var Sequelize = require('sequelize');
 var MyModel = require('./define');
 
-//判断用户密码是否正确,返回User or false
+
+/**
+ * 判断用户密码是否正确,
+ * @param {any} username 用户名
+ * @param {any} psw 密码
+ * @returns User or false
+ */
 function login(username,psw){
+    
   return MyModel.User.findOne({
       where:{
           username :username,
@@ -13,7 +20,6 @@ function login(username,psw){
           return false;
       else
       { 
-          console.log(user);
           return user;
       } 
   },(err)=>{
@@ -23,7 +29,13 @@ function login(username,psw){
 }
 
 
-//写入session,返回session
+
+/**
+ * 写入session,返回session
+ * @param {any} user 用户
+ * @param {any} session
+ * @returns session 对象
+ */
 function saveSession(user,session) {
    return MyModel.Session.findOrCreate(
        {

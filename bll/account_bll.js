@@ -1,6 +1,6 @@
 var account_dao = require('../dao/account_dao');
 var util = require('../util/md5');
-var bodymaker = require('../util/respone_builder');
+var bodymaker = require('../util/respone-builder');
 var Sequelize = require('sequelize');
 
 function onLogin(req, res) {

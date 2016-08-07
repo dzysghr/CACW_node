@@ -13,7 +13,6 @@ router.use(function timeLog(req, res, next) {
 //检查session 中间件
 router.use(checker())
 
-
 router.use(bodyParser.json());
 
 //个人信息

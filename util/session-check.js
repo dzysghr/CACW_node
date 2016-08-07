@@ -3,9 +3,10 @@ var account_dao = require('../dao/account_dao');
 
 function checker(option) {
     return function check(req, res, next) {
+        //console.log(req.headers);
         var s = req.cookies['sessionId'];
         if (s == undefined) {
-            res.send(bodymaker.makeErrorJson(3, 'can not find sessionid in header'));
+            res.send(bodymaker.makeErrorJson(3, 'can not find sessionId in header'));
             return;
         }
         account_dao.getUser(s)

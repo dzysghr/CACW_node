@@ -3,9 +3,11 @@ var bodymaker = require('../util/respone-builder');
 var Sequelize = require('sequelize');
 var account_dao = require('../dao/account_dao');
 
+
+
 function getUserInfo(req, res) {
-    var id = req.params.id;
-    user_dao.getUserbyId(id)
+    var username = req.params.username;
+    user_dao.getUserByUserName(username)
         .then(u => {
             if (u == undefined) {
                 res.send(bodymaker.makeErrorJson(5, 'user not found'));

@@ -18,7 +18,7 @@ router.use(checker())
 router.use(bodyParser.json());
 
 //个人信息
-router.get('/:id', function (req, res) {
+router.get('/:username', function (req, res) {
   user_bll.getUserInfo(req, res);
 });
 

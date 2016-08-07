@@ -9,6 +9,14 @@ function getUserbyId(userid) {
     })
 }
 
+function getUserByUserName(username) {
+    return MyModel.User.findOne({
+        where: {
+            username: username
+        }
+    })
+}
+
 
 /**
  * 修改用户信息
@@ -68,4 +76,4 @@ function setAvatarUrl(userid, url) {
     })
 }
 
-module.exports = { getUserbyId, setAvatarUrl, queryUser, setUserInfo }
+module.exports = { getUserbyId, setAvatarUrl, queryUser, setUserInfo,getUserByUserName}

@@ -97,7 +97,6 @@ function register(username,psw) {
         {
             username:username,
             psw : psw,
-            email:username
         }
     );
 }

@@ -6,8 +6,8 @@ var bodyParser = require('body-parser')
 
 //  log中间件
 router.use(function timeLog(req, res, next) {
-  console.log('访问团队模块 Time: ', Date.now());
-  next();
+    console.log('访问团队模块 Time: ', Date.now());
+    next();
 });
 
 //检查session 中间件
@@ -17,44 +17,44 @@ router.use(checker())
 router.use(bodyParser.json());
 
 //创建团队
-router.post('/create/:teamname', function(req, res) {
-    team_bll.createTeam(req,res);
+router.post('/create/:teamname', function (req, res) {
+    team_bll.createTeam(req, res);
 });
 
 
 //修改团队
-router.post('/:id', function(req, res) {
-    team_bll.setTeamInfo(req,res);
+router.post('/:id', function (req, res) {
+    team_bll.setTeamInfo(req, res);
 });
 
 //解散团队
-router.delete('/:id', function(req, res) {
+router.delete('/:id', function (req, res) {
 
 });
 
 //退出团队
-router.get('/out/:id', function(req, res) {
+router.get('/out/:id', function (req, res) {
 
 });
 
 //团队成员
-router.get('/members/:id', function(req, res) {
-
+router.get('/:id/members', function (req, res) {
+    team_bll.getTeamMemer(req, res);
 });
 
 //查看团队
-router.get('/:id', function(req, res) {
-    team_bll.getTeamInfo(req,res);
+router.get('/:id', function (req, res) {
+    team_bll.getTeamInfo(req, res);
 });
 
 
 //获取团队列表
-router.get('/list', function(req, res) {
+router.get('/list', function (req, res) {
 
 });
 
 //删除团队成员
-router.get('/DeleteMember/:id', function(req, res) {
+router.get('/DeleteMember/:id', function (req, res) {
 
 });
 

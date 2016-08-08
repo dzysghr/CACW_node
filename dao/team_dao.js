@@ -27,8 +27,8 @@ function createTeam(user, teamname) {
 
 //获取团队成员
 function getTeamMembers(teamid, limit, offset) {
-    limit = limit|100;
-    offset = offset&&offset>0 || 0;
+    limit = limit&&limit>0? limit:100;
+    offset = offset&&offset>0? offset: 0;
 
     return MyModel.TeamMember.findAll({
         where: {

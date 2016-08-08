@@ -17,3 +17,5 @@
 //   console.log(err);
 // })
 // ;
+var a = 'true';
+console.log(a==1);

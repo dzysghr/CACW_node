@@ -60,6 +60,46 @@ function createTeam(req, res) {
 
 
 
+function getTeamMemer(req, res) {
+    var tid = req.params.id;
+    var s = req.cookies['sessionId'];
+    account_dao.getUser(s)
+        .then(u => {
+                team_dao.getTeamByid(tid)
+                .then(t => {
+                    if (t == undefined) {
+                        res.send(bodymaker.makeJson(5, 'team not found'));
+                        return;
+                    }
+                    return [t.hasMember(u),t.id];
+                })
+                .spread((r ,tid) => {
+                    if (r) //如果是成员
+                        return team_dao.getTeamMembers(tid, req.query.limit, req.query.offset);
+                    else {
+                        res.send(bodymaker.makeJson(4, 'you are not member in this team'))
+                        return;
+                    }
+                })
+                .then(us => {
+                    if (us == undefined) {
+                        return;
+                    }
+                    var all = false;
+                    if (req.query.all == undefined)
+                        all = false;
+                    else if (req.query.all == 'true')
+                        all = true;
+                    var userlist = bodymaker.makeUserInfoList(us, all);
+                    var body = bodymaker.makeBodyOn(0, '', 'member', userlist);
+                    res.send(JSON.stringify(body));
+                })
+                .catch(err => {
+                    res.send(bodymaker.makeJson(1,err.message));
+                })
+        })
+}
+
 
 function setTeamInfo(req, res) {
     var id = req.params.id;
@@ -98,18 +138,20 @@ function getTeamInfo(req, res) {
             return;
         }
         var teambody = bodymaker.makeTeamInfo(t);
-        
+        var body = bodymaker.makeBodyOn(0, '', 'team', teambody);
+        res.send(JSON.stringify(body));
         //检查是否需要返回成员
-        var count = req.query.withMember;
-        if (count == undefined || count <= 0){
-            let body = bodymaker.makeBodyOn(0, '', 'team', teambody);
-            res.send(JSON.stringify(body));
-            return;
-        }
-
-    }).catch(err => {
-        res.send(JSON.stringify(bodymaker.makeJson(1, err)));
+        // var count = req.query.withMember;
+        // if (count == undefined || count <= 0) {
+        //     var body = bodymaker.makeBodyOn(0, '', 'team', teambody);
+        //     res.send(JSON.stringify(body));
+        //     return;
+        // }
+        // return body;
     })
+        .catch(err => {
+            res.send(JSON.stringify(bodymaker.makeJson(1, err)));
+        })
 }
 
-module.exports = { createTeam, setTeamInfo, getTeamInfo }
+module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer }

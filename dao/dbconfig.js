@@ -1,4 +1,8 @@
 var Sequelize = require('sequelize');
+
+
+var log = true;
+
 var sequelize = new Sequelize('cacw', 'root', '123', 
 {
   host: 'localhost',
@@ -8,7 +12,8 @@ var sequelize = new Sequelize('cacw', 'root', '123',
     max: 5,
     min: 0,
     idle: 10000
-  }
+  },
+  logging:log?console.log:function empty(e){}
 });
 
 sequelize

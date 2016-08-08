@@ -4,7 +4,6 @@ var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
 var fs = require('fs')
 
-
 function createTeam(req, res) {
     var teamname = req.params.teamname;
     var s = req.cookies['sessionId'];
@@ -68,8 +67,7 @@ function getTeamMemer(req, res) {
             team_dao.getTeamByid(tid)
                 .then(t => {
                     if (t == undefined) {
-                        res.send(bodymaker.makeJson(5, 'team not found'));
-                        return;
+                        throw new Error('team not found');
                     }
                     return [t.hasMember(u), t.id];
                 })
@@ -77,13 +75,12 @@ function getTeamMemer(req, res) {
                     if (r) //如果是成员
                         return team_dao.getTeamMembers(tid, req.query.limit, req.query.offset);
                     else {
-                        res.send(bodymaker.makeJson(4, 'you are not member in this team'))
-                        return;
+                        throw new Error('you are not member in this team');
                     }
                 })
                 .then(us => {
                     if (us == undefined) {
-                        return;
+                        throw new Error('no result from getTeamMembers,please check you limit or offset params');
                     }
                     var all = false;
                     if (req.query.allcolumn == undefined)
@@ -157,21 +154,50 @@ function getTeamList(req, res) {
     var id = req.params.id;
     var session = req.cookies['sessionId'];
     account_dao.getUser(session)
-    .then(u=>{
-        return team_dao.getTeamList(u);
-    })
-    .then(tlist=>{
-        var all = req.query.allcolumn;
-        if(all=='true')
-            all = true;
-        else all =false;
-       
-        var teambody =  bodymaker.makeTeamInfoArray(tlist,all);
-        var body = bodymaker.makeBodyOn(0,'','teams',teambody);
-        res.send(JSON.stringify(body));
-    }).catch(err=>{
-        res.send(bodymaker.makeJson(1,err.message));
-    })
+        .then(u => {
+            return team_dao.getTeamList(u);
+        })
+        .then(tlist => {
+            var all = req.query.allcolumn;
+            if (all == 'true')
+                all = true;
+            else all = false;
+
+            var teambody = bodymaker.makeTeamInfoArray(tlist, all);
+            var body = bodymaker.makeBodyOn(0, '', 'teams', teambody);
+            res.send(JSON.stringify(body));
+        }).catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
 }
 
-module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList }
+
+function deleteMember(req, res) {
+    if (req.query.memberid == undefined) {
+        res.send(bodymaker.makeJson(7, 'query params "memberid" is expected'));
+    }
+    var session = req.cookies['sessionId'];
+    var teamid = req.params.teamid;
+    account_dao.getUser(session)
+        .then(u => {
+            if (u.id == req.query.memberid)//如果要删除的人是自己
+                throw new Error('you can not delete yourself');
+
+            return team_dao.getTeamByid(teamid)
+                .then(t => {
+                    if (t == undefined)
+                        throw new Error('team not found');
+                    if (t.AdminId != u.id)
+                        throw new Error('you are not admin in this team');
+
+                    return t.removeMember(req.query.memberid)
+                })
+                .then(()=>{
+                    res.send(bodymaker.makeJson(0, ''));
+                })
+        }).catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList, deleteMember }

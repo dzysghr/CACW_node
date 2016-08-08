@@ -60,7 +60,7 @@ function getTeamByid(teamid) {
     });
 }
 //删除团队成员
-function removeTeamMember(teamid, user) {
+function removeTeamMember(team, user) {
     return getTeamByid(teamid).then(t => {
         return t.removeMember(user);
     });

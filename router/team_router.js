@@ -28,7 +28,7 @@ router.post('/:id', function (req, res) {
 });
 
 //解散团队
-router.delete('/:id', function (req, res) {
+router.delete('/:id/dissolve', function (req, res) {
 
 });
 
@@ -57,8 +57,8 @@ router.get('/:id', function (req, res) {
 
 
 //删除团队成员
-router.get('/DeleteMember/:id', function (req, res) {
-
+router.delete('/:teamid', function (req, res) {
+    team_bll.deleteMember(req,res);
 });
 
 module.exports = router;

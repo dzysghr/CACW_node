@@ -28,8 +28,8 @@ router.post('/:id', function (req, res) {
 });
 
 //解散团队
-router.delete('/:id/dissolve', function (req, res) {
-
+router.delete('/:teamid/dissolve', function (req, res) {
+    team_bll.dissolveTeam(req,res);
 });
 
 //退出团队

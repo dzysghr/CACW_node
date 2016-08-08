@@ -206,27 +206,53 @@ function leaveTeam(req, res) {
     account_dao.getUser(session)
         .then(u => {
             return team_dao.getTeamByid(req.params.teamid)
-                .then(t => 
-                {
-                    if(t==undefined)
+                .then(t => {
+                    if (t == undefined)
                         throw new Error('team not found');
-                    if(t.AdminId==u.id)
+                    if (t.AdminId == u.id)
                         throw new Error('you can not leave the team you created');
-                    
-                    return [t.hasMember(u),t];
+
+                    return [t.hasMember(u), t];
                 })
-                .spread((have,t)=>{
-                    if(!have)
+                .spread((have, t) => {
+                    if (!have)
                         throw new Error('you are not member of the team');
                     return t.removeMember(u.id);
                 })
-                .then(()=>{
-                    res.send(bodymaker.makeJson(0,''));
+                .then(() => {
+                    res.send(bodymaker.makeJson(0, ''));
                 })
         })
-        .catch(err=>{
-            res.send(bodymaker.makeJson(1,err.message));
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
         })
 }
 
-module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList, deleteMember, leaveTeam }
+function dissolveTeam(req, res) {
+    var session = req.cookies['sessionId'];
+    account_dao.getUser(session)
+        .then(u => {
+            return team_dao.getTeamByid(req.params.teamid)
+                .then(t => {
+                    if (t == undefined)
+                        throw new Error('team not found');
+                    if (t.AdminId != u.id)
+                        throw new Error('you are not the admin of the team');
+                    return t.destroy();
+                })
+                .then(() => {
+                    res.send(bodymaker.makeJson(0,''));
+                })
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+
+module.exports = {
+    createTeam,
+    setTeamInfo, getTeamInfo,
+    getTeamMemer, getTeamList,
+    deleteMember, leaveTeam, dissolveTeam
+}

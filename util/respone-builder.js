@@ -33,11 +33,10 @@ function makeBodyOn(code, msg, childname, body) {
 }
 
 
-function makeUserInfoList(users,all)
-{
-    var list =[];
+function makeUserInfoArray(users, all) {
+    var list = [];
     for (var i = 0; i < users.length; i++) {
-         list[i] = makeUserInfo(users[i],all);
+        list[i] = makeUserInfo(users[i], all);
     }
     return list;
 }
@@ -47,13 +46,13 @@ function makeUserInfoList(users,all)
  *  
  *  构造用户信息对象 
  * @param {any} user Model对象
- * @param {any} all 是否包含用户所有信息，默认为true
+ * @param {any} all 是否包含用户所有信息，默认为false
  * @returns
  */
 function makeUserInfo(user, all) {
-    if(all==undefined)
-        all= true;
-    
+    if (all == undefined)
+        all = false;
+
     if (all) {
         var u = {
             id: user.id,
@@ -67,7 +66,7 @@ function makeUserInfo(user, all) {
             shortNumber: user.shortNumber,
             email: user.email
         }
-    }else{
+    } else {
         var u = {
             id: user.id,
             username: user.username,
@@ -77,17 +76,35 @@ function makeUserInfo(user, all) {
     return u;
 }
 
+function makeTeamInfoArray(teams, all) {
+    var list = [];
+    for (var i = 0; i < teams.length; i++) {
+        list[i] = makeTeamInfo(teams[i], all);
+    }
+    return list;
+}
 
-function makeTeamInfo(team) {
-    var t = {
-        id: team.id,
-        teamName: team.teamName,
-        summary: team.summary,
-        notice: team.notice,
-        AdminId: team.AdminId
+
+function makeTeamInfo(team, all) {
+
+    if (all == undefined)
+        all = false;
+    if (all) {
+        var t = {
+            id: team.id,
+            teamName: team.teamName,
+            summary: team.summary,
+            notice: team.notice,
+            AdminId: team.AdminId
+        }
+    } else {
+        var t = {
+            id: team.id,
+            teamName: team.teamName
+        }
     }
     return t;
 }
 
 
-module.exports = { makeTeamInfo, makeBody, makeErrorJson, makeUserInfo, makeBodyOn, makeJson,makeUserInfoList};
+module.exports = { makeTeamInfo, makeBody, makeErrorJson, makeUserInfo, makeBodyOn, makeJson, makeUserInfoArray, makeTeamInfoArray };

@@ -13,7 +13,7 @@ function getUserInfo(req, res) {
                 res.send(bodymaker.makeErrorJson(5, 'user not found'));
                 return;
             }
-            var userbody = bodymaker.makeUserInfo(u);
+            var userbody = bodymaker.makeUserInfo(u,true);
             var body = bodymaker.makeBodyOn(0, '', 'user', userbody);
             res.send(JSON.stringify(body));
         }).catch(err => {

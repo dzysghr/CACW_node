@@ -65,15 +65,15 @@ function getTeamMemer(req, res) {
     var s = req.cookies['sessionId'];
     account_dao.getUser(s)
         .then(u => {
-                team_dao.getTeamByid(tid)
+            team_dao.getTeamByid(tid)
                 .then(t => {
                     if (t == undefined) {
                         res.send(bodymaker.makeJson(5, 'team not found'));
                         return;
                     }
-                    return [t.hasMember(u),t.id];
+                    return [t.hasMember(u), t.id];
                 })
-                .spread((r ,tid) => {
+                .spread((r, tid) => {
                     if (r) //如果是成员
                         return team_dao.getTeamMembers(tid, req.query.limit, req.query.offset);
                     else {
@@ -86,16 +86,16 @@ function getTeamMemer(req, res) {
                         return;
                     }
                     var all = false;
-                    if (req.query.all == undefined)
+                    if (req.query.allcolumn == undefined)
                         all = false;
-                    else if (req.query.all == 'true')
+                    else if (req.query.allcolumn == 'true')
                         all = true;
-                    var userlist = bodymaker.makeUserInfoList(us, all);
+                    var userlist = bodymaker.makeUserInfoArray(us, all);
                     var body = bodymaker.makeBodyOn(0, '', 'member', userlist);
                     res.send(JSON.stringify(body));
                 })
                 .catch(err => {
-                    res.send(bodymaker.makeJson(1,err.message));
+                    res.send(bodymaker.makeJson(1, err.message));
                 })
         })
 }
@@ -104,8 +104,6 @@ function getTeamMemer(req, res) {
 function setTeamInfo(req, res) {
     var id = req.params.id;
     var session = req.cookies['sessionId'];
-    console.log(req.body);
-    console.log('agvsafasdfsadf');
     account_dao.getUser(session).then(u => {
         return team_dao.getTeamByid(id)
             .then(t => {
@@ -154,4 +152,26 @@ function getTeamInfo(req, res) {
         })
 }
 
-module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer }
+
+function getTeamList(req, res) {
+    var id = req.params.id;
+    var session = req.cookies['sessionId'];
+    account_dao.getUser(session)
+    .then(u=>{
+        return team_dao.getTeamList(u);
+    })
+    .then(tlist=>{
+        var all = req.query.allcolumn;
+        if(all=='true')
+            all = true;
+        else all =false;
+       
+        var teambody =  bodymaker.makeTeamInfoArray(tlist,all);
+        var body = bodymaker.makeBodyOn(0,'','teams',teambody);
+        res.send(JSON.stringify(body));
+    }).catch(err=>{
+        res.send(bodymaker.makeJson(1,err.message));
+    })
+}
+
+module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList }

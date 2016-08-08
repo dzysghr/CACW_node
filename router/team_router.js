@@ -42,16 +42,19 @@ router.get('/:id/members', function (req, res) {
     team_bll.getTeamMemer(req, res);
 });
 
+
+//获取团队列表
+router.get('/list', function (req, res) {
+    team_bll.getTeamList(req,res);
+});
+
 //查看团队
 router.get('/:id', function (req, res) {
     team_bll.getTeamInfo(req, res);
 });
 
 
-//获取团队列表
-router.get('/list', function (req, res) {
 
-});
 
 //删除团队成员
 router.get('/DeleteMember/:id', function (req, res) {

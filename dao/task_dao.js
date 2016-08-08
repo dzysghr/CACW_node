@@ -65,7 +65,7 @@ function setTaskMember(task, memberids, user) {
         ids[i] = memberids[i].id;
     }
     if (!have)
-        return new Promise((resolve, reject) => { reject('taskMember have no yourself') });
+        return new Promise((resolve, reject) => { reject('you are not a member in this team') });
 
     return task.setMembers([])
         .then(() => {

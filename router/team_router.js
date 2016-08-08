@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var team_bll = require('../bll/team_bll');
 var checker = require('../util/session-check');
-
+var bodyParser = require('body-parser')
 
 //  log中间件
 router.use(function timeLog(req, res, next) {
@@ -13,7 +13,8 @@ router.use(function timeLog(req, res, next) {
 //检查session 中间件
 router.use(checker())
 
-
+//json 解析 ,用于团队资料修改
+router.use(bodyParser.json());
 
 //创建团队
 router.post('/create/:teamname', function(req, res) {
@@ -23,7 +24,7 @@ router.post('/create/:teamname', function(req, res) {
 
 //修改团队
 router.post('/:id', function(req, res) {
-
+    team_bll.setTeamInfo(req,res);
 });
 
 //解散团队
@@ -43,7 +44,7 @@ router.get('/members/:id', function(req, res) {
 
 //查看团队
 router.get('/:id', function(req, res) {
-
+    team_bll.getTeamInfo(req,res);
 });
 
 

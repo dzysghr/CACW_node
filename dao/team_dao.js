@@ -14,23 +14,40 @@ function createTeam(user, teamname) {
             teamName: teamname,
             AdminId: user.id
         }
-    ).then(t => 
-    {
+    ).then(t => {
         return MyModel.User.findOne()
-        .then(u => 
-        {
-            return t.addMember(u)
-            .then(() => {
-                return t;
-            });
-        })
+            .then(u => {
+                return t.addMember(u)
+                    .then(() => {
+                        return t;
+                    });
+            })
     });
 }
 
 //获取团队成员
-function getTeamMembers(teamid) {
-    return getTeamByid(teamid).then(t => {
-        return t.getMember();
+function getTeamMembers(teamid, limit, offset) {
+    limit = limit|100;
+    offset = offset&&offset>0 || 0;
+
+    return MyModel.TeamMember.findAll({
+        where: {
+            teamId: teamid
+        }
+    }).then(tm => {
+        var ids =new Array();
+        for (var i = 0; i < tm.length; i++) {
+            ids[i] = tm[i].userId;
+        }    
+        return MyModel.User.findAll(
+            {
+                where:
+                {
+                    id: {$in: ids}
+                },
+                limit:limit,
+                offset:offset
+            })
     })
 }
 
@@ -58,14 +75,12 @@ function addTeamMember(teamid, user) {
 }
 
 //修改团队资料
-function setTeamInfo(team) {
-    return getTeamByid(team.id).then(t => {
-        t.summary = team.summary == undefined ? t.summary : team.summary;
-        t.teamName = team.teamName == undefined ? t.teamName : team.teamName;
-        t.avatarUrl = team.avatarUrl == undefined ? t.avatarUrl : team.avatarUrl;
-        t.notice = team.notice == undefined ? t.notice : team.noticesummary;
-        return t.save();
-    })
+function setTeamInfo(team, params) {
+
+    team.summary = params.summary || team.summary;
+    team.teamName = params.teamName || team.teamName;
+    team.notice = params.notice || team.notice;
+    return team.save();
 }
 
 //获取团队列表

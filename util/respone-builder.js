@@ -6,6 +6,14 @@ function makeBody(code, msg) {
     return resbody;
 }
 
+function makeJson(code, msg) {
+    var resbody = {
+        state_code: code,
+        error_msg:msg
+    }
+    return JSON.stringify (resbody);
+}
+
 function makeErrorJson(code, msg) {
     var resbody = {
         state_code: code,
@@ -42,4 +50,16 @@ function makeUserInfo(user) {
 }
 
 
-module.exports = {makeBody,makeErrorJson,makeUserInfo,makeBodyOn};
+function makeTeamInfo(team) {
+    var t={
+        id:team.id,
+        teamName:team.teamName,
+        summary:team.summary,
+        notice:team.notice,
+        AdminId:team.AdminId
+    }
+    return t;
+}
+
+
+module.exports = {makeTeamInfo,makeBody,makeErrorJson,makeUserInfo,makeBodyOn,makeJson};

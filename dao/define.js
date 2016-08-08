@@ -129,11 +129,19 @@ var Session = sequelize.define('session', {
     type: Sequelize.STRING
   }
 },{charset:'utf8'});
+
 var TaskMember = sequelize.define('taskmember', {
   finish: {
     type: Sequelize.INTEGER //1 为未完成  2 为完成
   }
 },{charset:'utf8'});
+
+var TeamMember = sequelize.define('teammember',{
+  tag: {
+    type: Sequelize.INTEGER //无用，只是为了防止空表无法被创建
+  }
+},{charset:'utf8'});
+
 
 //定义关系
 Task.belongsTo(Project);
@@ -145,8 +153,8 @@ Task.belongsToMany(User,{through:TaskMember,as:'Member'});
 User.belongsToMany(Task,{through:TaskMember,as :'Task'});
 
 
-Team.belongsToMany(User,{through:'Teammember',as:'Member'});
-User.belongsToMany(Team,{through:'Teammember',as:'Team'}); //user.getTeam()
+Team.belongsToMany(User,{through:TeamMember,as:'Member'});
+User.belongsToMany(Team,{through:TeamMember,as:'Team'}); //user.getTeam()
 
 Message.belongsTo(User,{as:'sender'});
 Message.belongsTo(User,{as:'reciever'});
@@ -159,7 +167,7 @@ Session.belongsTo(User);
 sequelize.sync();
 //User.sync({force:true});
 
-module.exports = {Task,Team,User,Project,Session,Message,TaskMember,sequelize};
+module.exports = {Task,Team,User,Project,Session,Message,TaskMember,TeamMember,sequelize};
 
 // force: true will drop the table if it already exists
 // User.sync({force: true}).then(function () {

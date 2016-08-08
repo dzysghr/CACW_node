@@ -18,7 +18,7 @@ app.use('/account', account);
 
 
 app.all('/', function (req, res) {
-    console.log(req.headers);
+    console.log(req.query.id);
     console.log("应用实例，主机名 ：%s  IP:%s", req.hostname, req.ip);
     res.send('hello world');
 

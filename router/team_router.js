@@ -53,7 +53,10 @@ router.get('/:id', function (req, res) {
     team_bll.getTeamInfo(req, res);
 });
 
-
+//修改团队头像
+router.post('/:teamid/upload', function (req, res) {
+    team_bll.setTeamAvatar(req, res);
+});
 
 
 //删除团队成员

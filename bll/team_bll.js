@@ -192,7 +192,7 @@ function deleteMember(req, res) {
 
                     return t.removeMember(req.query.memberid)
                 })
-                .then(()=>{
+                .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
                 })
         }).catch(err => {
@@ -200,4 +200,33 @@ function deleteMember(req, res) {
         })
 }
 
-module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList, deleteMember }
+
+function leaveTeam(req, res) {
+    var session = req.cookies['sessionId'];
+    account_dao.getUser(session)
+        .then(u => {
+            return team_dao.getTeamByid(req.params.teamid)
+                .then(t => 
+                {
+                    if(t==undefined)
+                        throw new Error('team not found');
+                    if(t.AdminId==u.id)
+                        throw new Error('you can not leave the team you created');
+                    
+                    return [t.hasMember(u),t];
+                })
+                .spread((have,t)=>{
+                    if(!have)
+                        throw new Error('you are not member of the team');
+                    return t.removeMember(u.id);
+                })
+                .then(()=>{
+                    res.send(bodymaker.makeJson(0,''));
+                })
+        })
+        .catch(err=>{
+            res.send(bodymaker.makeJson(1,err.message));
+        })
+}
+
+module.exports = { createTeam, setTeamInfo, getTeamInfo, getTeamMemer, getTeamList, deleteMember, leaveTeam }

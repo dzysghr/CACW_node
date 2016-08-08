@@ -33,8 +33,8 @@ router.delete('/:id/dissolve', function (req, res) {
 });
 
 //退出团队
-router.get('/out/:id', function (req, res) {
-
+router.get('/:teamid/out', function (req, res) {
+    team_bll.leaveTeam(req,res);
 });
 
 //团队成员

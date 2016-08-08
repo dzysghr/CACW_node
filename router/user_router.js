@@ -21,9 +21,9 @@ router.get('/:username', function (req, res) {
 });
 
 //获取个人头像
-router.get('/avatar', function (req, res) {
-  user_bll.getUserInfo(req, res);
-});
+// router.get('/avatar', function (req, res) {
+  
+// });
 
 
 //修改头像

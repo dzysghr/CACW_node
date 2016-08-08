@@ -17,5 +17,13 @@
 //   console.log(err);
 // })
 // ;
-var a = 'true';
-console.log(a==1);
+
+function c() {
+    var a = 'true';
+    {
+    let b = 'agf';
+    }
+    console.log(a == 1);
+}
+
+c();

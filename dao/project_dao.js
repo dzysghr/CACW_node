@@ -56,13 +56,17 @@ function getProjectById(id) {
 }
 
 
-getProjectById(1).then(p => {
-    return p.destroy();
-})
-
-
-
 //todo
 function delProject(id) {
     return MyModel.Project.findOne({ where: { id: id } }).then(p)
+}
+
+
+module.exports ={
+    createProject,
+    getProjectByTeam,
+    getTeamProjectCount,
+    getProjectByUser,
+    getProjectById,
+    delProject
 }

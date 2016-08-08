@@ -2,7 +2,8 @@ var team_dao = require('../dao/team_dao');
 var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
-var fs = require('fs')
+var fs = require('fs');
+
 
 function createTeam(req, res) {
     var teamname = req.params.teamname;

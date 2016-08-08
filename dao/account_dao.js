@@ -57,7 +57,12 @@ function saveSession(user,session) {
         return s;
     });
 }
-      
+
+
+function getUserByReq(req) {
+    var s = req.cookies['sessionId'];
+    return getUser(s);
+}
 
 /**
  * 
@@ -101,7 +106,7 @@ function register(username,psw) {
     );
 }
 
-module.exports = {register,login,logout,saveSession,getUser}
+module.exports = {register,login,logout,saveSession,getUser,getUserByReq}
 
 
 

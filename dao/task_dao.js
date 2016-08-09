@@ -53,28 +53,12 @@ function setTask(params) {
         })
 }
 
-//设置成员
-function setTaskMember(task, memberids) {
-    // return task.setMember([])
-    //     .then(() => {
-    //         return MyModel.User.findAll({
-    //             where: {
-    //                 id: {
-    //                     $in: ids
-    //                 }
-    //             }
-    //         })
-    //     }).then(users=>{
-    //        return task.setMember(users);
-    //     })
-    return task.setMember(memberids);
-}
 
 
 module.exports = {
     getTaskById,getAllTasks,
     getUnfinishTask,createTask,
-    setTask,setTaskMember
+    setTask
 }
 
 //获取任务成员，调用task.getMember()

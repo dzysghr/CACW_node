@@ -18,8 +18,8 @@
 // })
 // ;
 
-var a;
-var b =3;
+var a=2;
+var b = 3;
 
-a = b&&a&&5;
-console.log(a+'');
+if (!a)
+    console.log('afasdf');

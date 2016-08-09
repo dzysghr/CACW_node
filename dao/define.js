@@ -54,7 +54,7 @@ var Task = sequelize.define('task', {
   startDate: {
     type: Sequelize.DATE
   },
-  endtDate: {
+  endDate: {
     type: Sequelize.DATE
   },
   location: {

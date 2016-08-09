@@ -19,29 +19,29 @@ router.use(bodyParser.json());
 
 
 //获取任务
-router.get('/list', function(req, res) {
+router.get('/list', function (req, res) {
 
 });
 
 
 //创建任务
-router.post('/create', function(req, res) {
-    task_bll.createTask(req,res);
+router.post('/create', function (req, res) {
+  task_bll.createTask(req, res);
 });
 
 //修改任务
-router.post('/:id/update', function(req, res) {
-
+router.post('/:taskid', function (req, res) {
+  task_bll.setTaskInfo(req, res);
 });
 
 //删除任务
-router.delete('/:id', function(req, res) {
+router.delete('/:taskid', function (req, res) {
 
 });
 
 
 //完成任务
-router.get('/:taskid/finish ', function(req, res) {
+router.get('/:taskid/finish ', function (req, res) {
 
 });
 

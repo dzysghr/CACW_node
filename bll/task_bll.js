@@ -6,10 +6,7 @@ var task_dao = require('../dao/task_dao');
 
 
 function createTask(req, res) {
-
     var body = req.body;
-
-
     if ((body.title && body.content
         && body.location && body.projectId
         && body.startDate && body.endDate
@@ -49,7 +46,7 @@ function createTask(req, res) {
                 .then(t=>{
                     if(t==undefined)
                         throw new Error('task create error');
-                    return task_dao.setTaskMember(t,req.body.members);
+                    return  t.setMember(req.body.members,{finish:1});
                 })
                 .then(()=>{
                     res.send(bodymaker.makeJson(0,''));
@@ -64,4 +61,36 @@ function createTask(req, res) {
 
 }
 
-module.exports = { createTask }
+
+function setTaskInfo(req,res) {
+
+    account_dao.getUserByReq(req)
+    .then(u=>{
+        return [task_dao.getTaskById(req.params.taskid),u];
+    })
+    .spread((t,u)=>{
+        if(!t)
+            throw new Error('task not found');
+        
+        if(t.AdminId!=u.id)
+            throw new Error('you are not admin');
+
+        
+        var body = req.body;
+        t.title = body.title||t.title;
+        t.content = body.content||t.content;
+        t.location = body.location||t.location;
+        t.startDate = body.startDate||t.startDate;
+        t.endDate = body.endDate||t.endDate;
+        return t.save();
+    })
+    .then(()=>{
+        res.send(bodymaker.makeJson(0,''));
+    })
+    .catch(err=>{
+        res.send(bodymaker.makeJson(1,err.message));
+    })
+}
+
+
+module.exports = { createTask ,setTaskInfo}

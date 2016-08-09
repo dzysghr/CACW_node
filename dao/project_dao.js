@@ -75,7 +75,13 @@ function getProjectsByUser(user) {
 }
 
 function getProjectById(id) {
-    return MyModel.Project.findOne({ where: { id: id } });
+    return MyModel.Project.findOne({ 
+        where: { id: id },
+        include:[{
+            model:MyModel.Team
+        }]
+    
+});
 }
 
 

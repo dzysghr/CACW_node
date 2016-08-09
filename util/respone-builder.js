@@ -106,13 +106,14 @@ function makeTeamInfo(team, all) {
     return t;
 }
 
-function makeProject(project) {
+function makeProject(proj) {
+
     var p={
-        id:project.id,
-        name:project.name,
+        id:proj.pid,
+        name:proj.pname,
         team:{
-            id:project.team.id,
-            name:project.team.teamName
+            id:proj.team.id,
+            name:proj.team.teamName
         }
     }
     return p

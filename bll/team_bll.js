@@ -308,10 +308,45 @@ function setTeamAvatar(req, res) {
         })
 }
 
+
+function searchTeam(req, res) {
+
+    if (req.query.query != undefined) {
+        var p = {
+            id: req.query.query,
+            teamName: req.query.query
+        }
+    } else if (req.query.id != undefined) {
+        var p = {
+            id: req.query.id,
+        }
+    } else if (req.query.teamName != undefined) {
+        var p = {
+            teamName: req.query.teamName
+        }
+    } else {
+        res.send(bodymaker.makeJson(1, 'query params not found ,you should set url params like /search?teamName=xxx'))
+        return
+    }
+
+    team_dao.queryTeam(p)
+        .then(ts => {
+            if (ts == undefined)
+                throw new Error('team not found');
+            var tbody = bodymaker.makeTeamInfoArray(ts, true);
+            var body = bodymaker.makeBodyOn(0, '', 'teams', tbody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1,err.message));
+        })
+}
+
 module.exports = {
     createTeam,
     setTeamInfo, getTeamInfo,
     getTeamMemer, getTeamList,
     deleteMember, leaveTeam,
-    dissolveTeam, setTeamAvatar
+    dissolveTeam, setTeamAvatar,
+    searchTeam
 }

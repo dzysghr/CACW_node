@@ -76,4 +76,24 @@ function getProjectList(req, res) {
         })
 }
 
-module.exports = { createProject, deleteProject ,getProjectList}
+function getProjectInfo(req,res)
+{
+    var id = req.params.id;
+    project_dao.getProjectById(id)
+    .then(p=>{
+        if(p==undefined)
+            throw new Error('project not found');
+
+        var pbody = bodymaker.makeProject(p);
+        var body = bodymaker.makeBodyOn(0,'','project',pbody);
+        res.send(JSON.stringify(body));
+    })
+    .catch(err=>{
+        res.send(bodymaker.makeJson(1,err.message));
+    })
+}
+module.exports = { createProject,
+     deleteProject ,
+     getProjectList,
+     getProjectInfo
+    }

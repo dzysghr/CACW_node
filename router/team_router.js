@@ -48,6 +48,13 @@ router.get('/list', function (req, res) {
     team_bll.getTeamList(req,res);
 });
 
+
+//搜索团队
+router.get('/search', function (req, res) {
+    team_bll.searchTeam(req, res);
+});
+
+
 //查看团队
 router.get('/:id', function (req, res) {
     team_bll.getTeamInfo(req, res);
@@ -63,5 +70,6 @@ router.post('/:teamid/upload', function (req, res) {
 router.delete('/:teamid', function (req, res) {
     team_bll.deleteMember(req,res);
 });
+
 
 module.exports = router;

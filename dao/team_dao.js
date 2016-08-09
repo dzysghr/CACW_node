@@ -92,20 +92,20 @@ function getTeamList(user) {
 
 //查询团队,查询参数：id 、teamName
 function queryTeam(params) {
-    var sql = 'select * from teams where 1=1 or ';
+    var sql = 'select * from teams where 1=2 or ';
     var flag = false;
     if (params.id) {
-        sql = sql + 'id = ' + params.id + ' or ';
+        sql = sql + 'id = \''+ params.id +'\' or ';
         flag = true;
     }
     if (params.teamName) {
-        sql = sql + "teamName like '%" + params.username + "%' or ";
+        sql = sql + "teamName like '%" + params.teamName + "%' or ";
         flag = true;
     }
     if (!flag)
         return new Promise((resolve, reject) => { resolve() });
     if (flag) {
-        sql += '1=1';
+        sql += '1=2';
     }
     return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }

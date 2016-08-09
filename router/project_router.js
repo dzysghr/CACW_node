@@ -24,19 +24,24 @@ router.post('/create', function (req, res) {
 
 //获取项目列表
 router.get('/list', function (req, res) {
-  project_bll.getProjectList(req,res);
+  project_bll.getProjectList(req, res);
 });
 
 //删除项目
 router.delete('/:id', function (req, res) {
-    project_bll.deleteProject(req, res);
+  project_bll.deleteProject(req, res);
+});
+
+//获取项目详情
+router.get('/:id', function (req, res) {
+  project_bll.getProjectInfo(req, res);
 });
 
 
 
 //获取项目任务
 router.post('/:id/tasks', function (req, res) {
-
+  req.send('还没有写，啦啦啦');
 });
 
 

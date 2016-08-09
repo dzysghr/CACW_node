@@ -23,8 +23,8 @@ router.post('/create', function (req, res) {
 
 
 //获取项目列表
-router.post('/list', function (req, res) {
-
+router.get('/list', function (req, res) {
+  project_bll.getProjectList(req,res);
 });
 
 //删除项目
@@ -35,7 +35,7 @@ router.delete('/:id', function (req, res) {
 
 
 //获取项目任务
-router.post('/tasklist/:id', function (req, res) {
+router.post('/:id/tasks', function (req, res) {
 
 });
 

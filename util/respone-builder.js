@@ -106,5 +106,39 @@ function makeTeamInfo(team, all) {
     return t;
 }
 
+function makeProject(project) {
+    var p={
+        id:project.id,
+        name:project.name,
+        team:{
+            id:project.team.id,
+            name:project.team.teamName
+        }
+    }
+    return p
+}
 
-module.exports = { makeTeamInfo, makeBody, makeErrorJson, makeUserInfo, makeBodyOn, makeJson, makeUserInfoArray, makeTeamInfoArray };
+function makeProjectArray(projects) {
+
+    var list= [];
+
+    for (var i = 0; i < projects.length; i++) {
+           list[i] = makeProject(projects[i]);
+    }
+    return list;
+}
+
+
+
+module.exports = {
+    makeTeamInfo,
+    makeBody,
+    makeErrorJson,
+    makeUserInfo,
+    makeBodyOn,
+    makeJson,
+    makeUserInfoArray,
+    makeTeamInfoArray,
+    makeProject,
+    makeProjectArray
+};

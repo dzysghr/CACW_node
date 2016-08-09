@@ -57,5 +57,23 @@ function deleteProject(req, res) {
         })
 }
 
+function getProjectList(req, res) {
 
-module.exports = { createProject, deleteProject }
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return project_dao.getProjectsByUser(u);
+        })
+        .then(projects=>{
+            
+            var pbody = bodymaker.makeProjectArray(projects);
+            var body = bodymaker.makeBodyOn(0,'','projects',pbody);
+
+            res.send(JSON.stringify(body));
+
+        })
+        .catch(err=>{
+            res.send(bodymaker.makeJson(1,err.message));
+        })
+}
+
+module.exports = { createProject, deleteProject ,getProjectList}

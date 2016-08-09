@@ -19,6 +19,26 @@ function getProjectByTeam(team) {
         }
     })
 }
+
+//获取团队项目列表
+function getProjectByTeamArray(teams) {
+
+    var list  = [];
+    for (var i = 0; i < teams.length; i++) {
+         list[i] =  teams[i].id;
+    }
+
+    return MyModel.Project.findAll({
+        where: {
+            teamId:{
+                $in:list
+            }
+        }
+    })
+}
+
+
+
 //获取团队项目数量
 function getTeamProjectCount(team) {
     return MyModel.Project.count({
@@ -30,7 +50,7 @@ function getTeamProjectCount(team) {
 
 
 //获取用户项目列表
-function getProjectByUser(user) {
+function getProjectsByUser(user) {
     //找出所有的团队
     return user.getTeam().then(teams => {
         //取团队id
@@ -46,7 +66,10 @@ function getProjectByUser(user) {
                 teamId: {
                     $in: list
                 }
-            }
+            },
+            include:[{
+                model:MyModel.Team
+            }]
         })
     })
 }
@@ -61,6 +84,7 @@ module.exports ={
     createProject,
     getProjectByTeam,
     getTeamProjectCount,
-    getProjectByUser,
-    getProjectById
+    getProjectsByUser,
+    getProjectById,
+    getProjectByTeamArray
 }

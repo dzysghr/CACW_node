@@ -15,16 +15,17 @@ router.use(checker())
 
 router.use(bodyParser.json());
 
-//个人信息
-router.get('/:username', function (req, res) {
-  user_bll.getUserInfo(req, res);
-});
+
 
 //获取个人头像
 // router.get('/avatar', function (req, res) {
   
 // });
 
+//个人信息
+router.get('/search', function (req, res) {
+  user_bll.searchUser(req, res);
+});
 
 //修改头像
 router.post('/upload', function (req, res) {
@@ -34,6 +35,11 @@ router.post('/upload', function (req, res) {
 //修改个人信息
 router.post('/', function (req, res) {
   user_bll.setUserInfo(req, res);
+});
+
+//个人信息
+router.get('/:username', function (req, res) {
+  user_bll.getUserInfo(req, res);
 });
 
 module.exports = router;

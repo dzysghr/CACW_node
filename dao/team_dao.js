@@ -92,7 +92,7 @@ function getTeamList(user) {
 
 //查询团队,查询参数：id 、teamName
 function queryTeam(params) {
-    var sql = 'select * from teams where 1=2 or ';
+    var sql = 'select * from teams where ';
     var flag = false;
     if (params.id) {
         sql = sql + 'id = \''+ params.id +'\' or ';

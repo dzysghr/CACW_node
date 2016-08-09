@@ -13,7 +13,7 @@ function getUserInfo(req, res) {
                 res.send(bodymaker.makeErrorJson(5, 'user not found'));
                 return;
             }
-            var userbody = bodymaker.makeUserInfo(u,true);
+            var userbody = bodymaker.makeUserInfo(u, true);
             var body = bodymaker.makeBodyOn(0, '', 'user', userbody);
             res.send(JSON.stringify(body));
         }).catch(err => {
@@ -49,7 +49,7 @@ function setUserAvator(req, res) {
     }
     account_dao.getUser(req.cookies['sessionId'])
         .then(u => {
-            
+
             var form = new formidable.IncomingForm();
             form.uploadDir = +__dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑
@@ -80,7 +80,7 @@ function setUserAvator(req, res) {
                         break;
                 }
 
-                var newPath = form.uploadDir + '/user_' + u.username+extName;
+                var newPath = form.uploadDir + '/user_' + u.username + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
                 res.send(bodymaker.makeBody(0, ''));
             })
@@ -89,4 +89,44 @@ function setUserAvator(req, res) {
         });
 }
 
-module.exports = { getUserInfo, setUserInfo, setUserAvator }
+function searchUser(req, res) {
+    if (req.query.query != undefined) {
+        var p = {
+            id: req.query.query,
+            username: req.query.query,
+            nickName: req.query.query
+        }
+    } else if (req.query.id != undefined) {
+        var p = {
+            id: req.query.id,
+        }
+    } else if (req.query.username != undefined) {
+        var p = {
+            username: req.query.username
+        }
+    }
+    else if (req.query.nickName != undefined) {
+        var p = {
+            nickName: req.query.nickName
+        }
+    }
+    else {
+        res.send(bodymaker.makeJson(1, 'query params not found ,you should set url params like /search?id=xxx'))
+        return
+    }
+
+    user_dao.queryUser(p)
+    .then(us=>{
+        if(us==undefined)
+            throw new Error('user not found');
+        var ubody = bodymaker.makeUserInfoArray(us,false);
+        var body = bodymaker.makeBodyOn(0,'','users',ubody);
+        res.send(JSON.stringify(body));
+    })
+    .catch(err=>{
+        res.send(bodymaker.makeJson(1,err.message));
+    })
+
+}
+
+module.exports = { getUserInfo, setUserInfo, setUserAvator, searchUser }

@@ -42,10 +42,10 @@ function setUserInfo(user, params) {
 
 //查询用户
 function queryUser(params) {
-    var sql = 'select * from Users where 1=1 or ';
+    var sql = 'select * from Users where ';
     var flag = false;
     if (params.id) {
-        sql = sql + 'id = ' + params.id + ' or ';
+        sql = sql + 'id = \'' + params.id + '\' or ';
         flag = true;
     }
     if (params.username) {
@@ -54,14 +54,14 @@ function queryUser(params) {
     }
 
     if (params.nickName) {
-        sql = sql + "nickName like '%" + params.username + "%' or ";
+        sql = sql + "nickName like '%" + params.nickName + "%' or ";
         flag = true;
     }
     if (!flag)
-        return new Promise((resolve, reject) => { resolve() });
+        return new Promise((resolve,reject)=>resolve());
 
     if (flag) {
-        sql += '1=1';
+        sql += '1=2';
     }
     return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }

@@ -174,25 +174,43 @@ function getTeamList(req, res) {
 }
 
 
+/**
+ * 
+ *  删除团队成员
+ * @param {any} req
+ * @param {any} res
+ * @param {any} memberid
+ * @param {any} isOut 当为true时表示自己退出团队，false时表示踢掉别人
+ */
 function deleteMemberFromTeam(req, res, memberid, isOut) {
 
     var session = req.cookies['sessionId'];
     var teamid = req.params.teamid;
+
     account_dao.getUser(session)
         .then(u => {
-            if (u.id == req.query.memberid)//如果要删除的人是自己
+        
+            if (!isOut&&u.id == memberid)//如果是删除成员且要删除的人是自己
                 throw new Error('you can not delete yourself');
+            if(isOut)
+                memberid = u.id;
 
             return team_dao.getTeamByid(teamid)
                 .then(t => {
                     if (t == undefined)
                         throw new Error('team not found');
-                    if (t.AdminId != u.id)
+
+                    if (!isOut &&t.AdminId != u.id)//如果是要删除成员但自己不是管理员
                         throw new Error('you are not admin in this team');
 
-                    return [t.getProjects(), t.removeMember(req.query.memberid)]
+                    if(isOut&& t.AdminId==u.id)  //如果是要退出团队但自己是管理员
+                        throw new Error('you are admin in this team');
+
+                    return [t.getProjects(), t.removeMember(memberid)]//删除这个人的成员身份,再删除这个人的一些痕迹
                 })
+                //获取团队的所有项目
                 .spread((ps) => {
+                    
                     if (ps == undefined || ps.lenght == 0)
                         return;
 
@@ -200,18 +218,19 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
                     for (var i = 0; i < ps.length; i++) {
                         pid[i] = ps[i].id;
                     }
+                    //删除 属于这个团队，且由这个人创建的所有任务
                     return MyModel.Task.destroy({
                         where: {
                             projectId: {
                                 $in: pid
                             },
-                            AdminId: u.id
+                            AdminId: memberid
                         }
                     })
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
-                })
+                }) 
         }).catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
         })
@@ -229,30 +248,7 @@ function deleteMember(req, res) {
 
 
 function leaveTeam(req, res) {
-    var session = req.cookies['sessionId'];
-    account_dao.getUser(session)
-        .then(u => {
-            return team_dao.getTeamByid(req.params.teamid)
-                .then(t => {
-                    if (t == undefined)
-                        throw new Error('team not found');
-                    if (t.AdminId == u.id)
-                        throw new Error('you can not leave the team you created');
-
-                    return [t.hasMember(u), t];
-                })
-                .spread((have, t) => {
-                    if (!have)
-                        throw new Error('you are not member of the team');
-                    return t.removeMember(u.id);
-                })
-                .then(() => {
-                    res.send(bodymaker.makeJson(0, ''));
-                })
-        })
-        .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
-        })
+    deleteMemberFromTeam(req,res,{},true)
 }
 
 function dissolveTeam(req, res) {

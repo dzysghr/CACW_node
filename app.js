@@ -5,6 +5,7 @@ var team = require("./router/team_router")
 var user = require("./router/user_router")
 var account = require("./router/account_router")
 var project = require("./router/project_router")
+var task = require('./router/task_router')
 var formidable = require('formidable')
 var util = require('util')
 var fs = require('fs')
@@ -15,7 +16,7 @@ app.use('/user', user);
 app.use('/team', team);
 app.use('/project', project);
 app.use('/account', account);
-
+app.use('/task',task);
 
 app.all('/', function (req, res) {
     console.log(req.query.id);

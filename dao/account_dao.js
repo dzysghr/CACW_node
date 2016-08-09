@@ -36,23 +36,24 @@ function login(username,psw){
  * @param {any} session
  * @returns session 对象
  */
-function saveSession(user,session) {
+function saveSession(user,session,deviceid) {
+
    return MyModel.Session.findOrCreate(
        {
            where: {userId:user.id},
            defaults: 
            {
                userId:user.id,
-               Session:session
+               Session:session,
+               deviceId:deviceid
            }
     }).spread(function(s, created)
     {
         if(!created)
         {
             s.Session = session;
-           return s.save({
-                fields:['Session']
-            });
+            s.deviceId = deviceid
+           return s.save();
         }
         return s;
     });

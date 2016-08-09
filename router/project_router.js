@@ -14,7 +14,7 @@ router.use(function timeLog(req, res, next) {
 //检查session 中间件
 router.use(checker())
 
-router.use(bodyParser.urlencoded({ extended: true }));
+router.use(bodyParser.json());
 
 //新建项目
 router.post('/create', function (req, res) {

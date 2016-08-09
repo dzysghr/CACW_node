@@ -18,12 +18,5 @@
 // })
 // ;
 
-function c() {
-    var a = 'true';
-    {
-    let b = 'agf';
-    }
-    console.log(a == 1);
-}
-
-c();
+var a = JSON.parse('"aa":"ss');
+console.log(a);

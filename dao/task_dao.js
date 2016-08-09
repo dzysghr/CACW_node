@@ -27,18 +27,17 @@ function getUnfinishTask(user) {
 }
 
 
-function createTask(taskparams, user, projectid) {
+
+function createTask(taskparams, user) {
     return MyModel.Task.create({
         title: taskparams.title,
         content: taskparams.content,
         startDate: taskparams.startDate,
         endDate: taskparams.endDate,
         location: taskparams.location,
-        projectId: projectid,
-        adminId: user.id
-    }).then(t => {
-        return t.addMember(user, { finish: 1 });
-    })
+        projectId: taskparams.projectId,
+        AdminId: user.id
+    });
 }
 
 //修改任务
@@ -55,30 +54,27 @@ function setTask(params) {
 }
 
 //设置成员
-function setTaskMember(task, memberids, user) {
-    var have = false;
-    var ids = [];
-    for (var i = 0; i < memberids.length; i++) {
-        if (memberids[i].id == user.id) {
-            have = true;
-        }
-        ids[i] = memberids[i].id;
-    }
-    if (!have)
-        return new Promise((resolve, reject) => { reject('you are not a member in this team') });
+function setTaskMember(task, memberids) {
+    // return task.setMember([])
+    //     .then(() => {
+    //         return MyModel.User.findAll({
+    //             where: {
+    //                 id: {
+    //                     $in: ids
+    //                 }
+    //             }
+    //         })
+    //     }).then(users=>{
+    //        return task.setMember(users);
+    //     })
+    return task.setMember(memberids);
+}
 
-    return task.setMembers([])
-        .then(() => {
-            return MyModel.User.findAll({
-                where: {
-                    id: {
-                        $in: ids
-                    }
-                }
-            })
-        }).then(users=>{
-           return task.setMember(users);
-        })
+
+module.exports = {
+    getTaskById,getAllTasks,
+    getUnfinishTask,createTask,
+    setTask,setTaskMember
 }
 
 //获取任务成员，调用task.getMember()

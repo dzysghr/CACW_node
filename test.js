@@ -18,5 +18,8 @@
 // })
 // ;
 
-var a = JSON.parse('"aa":"ss');
-console.log(a);
+var a;
+var b =3;
+
+a = b&&a&&5;
+console.log(a+'');

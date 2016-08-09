@@ -14,7 +14,8 @@ function checker(option) {
         MyModel.Session.findOne({
             where: {
                 Session: s
-            }
+            },
+            attributes:['Session']
         }).then(s => {
             if (s == undefined) {
                 res.send(bodymaker.makeErrorJson(3, 'session expired,you have aleady logout'));

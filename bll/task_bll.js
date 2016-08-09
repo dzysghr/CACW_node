@@ -21,10 +21,10 @@ function createTask(req, res) {
                 .then(p => {
                     if (p == undefined)
                         throw new Error('projectid not found');
-                    return [p.getTeam(),p];
+                    return [p.getTeam(), p];
                 })
                 .spread((t, p) => {
-           
+
                     //检查成员里是否有自己
                     var f = false;
                     for (var id in body.members) {
@@ -40,57 +40,88 @@ function createTask(req, res) {
                 })
                 .then(ismember => {
                     if (!ismember)
-                        throw new Error('Some userid are not from the team of the project');  
-                        return task_dao.createTask(req.body,u);
-                    })
-                .then(t=>{
-                    if(t==undefined)
+                        throw new Error('Some userid are not from the team of the project');
+                    return task_dao.createTask(req.body, u);
+                })
+                .then(t => {
+                    if (t == undefined)
                         throw new Error('task create error');
-                    return  t.setMember(req.body.members,{finish:1});
+                    return t.setMember(req.body.members, { finish: 1 });
                 })
-                .then(()=>{
-                    res.send(bodymaker.makeJson(0,''));
+                .then(() => {
+                    res.send(bodymaker.makeJson(0, ''));
                 })
         })
-        .catch(err=>{
-            res.send(bodymaker.makeJson(1,err.message));
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
         })
-
-
-
-
 }
 
 
-function setTaskInfo(req,res) {
+function setTaskInfo(req, res) {
 
     account_dao.getUserByReq(req)
-    .then(u=>{
-        return [task_dao.getTaskById(req.params.taskid),u];
-    })
-    .spread((t,u)=>{
-        if(!t)
-            throw new Error('task not found');
-        
-        if(t.AdminId!=u.id)
-            throw new Error('you are not admin');
+        .then(u => {
+            return [task_dao.getTaskById(req.params.taskid), u];
+        })
+        .spread((t, u) => {
+            if (!t)
+                throw new Error('task not found');
 
-        
-        var body = req.body;
-        t.title = body.title||t.title;
-        t.content = body.content||t.content;
-        t.location = body.location||t.location;
-        t.startDate = body.startDate||t.startDate;
-        t.endDate = body.endDate||t.endDate;
-        return t.save();
-    })
-    .then(()=>{
-        res.send(bodymaker.makeJson(0,''));
-    })
-    .catch(err=>{
-        res.send(bodymaker.makeJson(1,err.message));
-    })
+            if (t.AdminId != u.id)
+                throw new Error('you are not admin');
+
+
+            var body = req.body;
+            t.title = body.title || t.title;
+            t.content = body.content || t.content;
+            t.location = body.location || t.location;
+            t.startDate = body.startDate || t.startDate;
+            t.endDate = body.endDate || t.endDate;
+            return t.save();
+        })
+        .then(() => {
+            res.send(bodymaker.makeJson(0, ''));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+function setTaskMember(req, res) {
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return task_dao.getTaskwithProject(req.params.taskid)
+                .then((task) => {
+                    if (!task)
+                        throw new Error('task not found');
+
+                    if (task.AdminId != u.id)
+                        throw new Error('you are not admin');
+
+                    return [task, task.project.getTeam()];
+                })
+                .spread((task, team) => {
+
+                    //检查成员里是否有自己
+                    var f = false;
+                    for (var id in body) {
+                        if (id == u.id) {
+                            f = true;
+                            break;
+                        }
+                    }
+                    if (f)
+                        return team.hasMember(body);//检查所有成员是不是都在这个团队
+                    throw new Error('you are not in members');
+
+                })
+        }).catch(err => {
+            res.send(1, err.message);
+        })
+
 }
 
 
-module.exports = { createTask ,setTaskInfo}
+
+module.exports = { createTask, setTaskInfo, setTaskMember }

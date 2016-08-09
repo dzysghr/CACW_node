@@ -3,6 +3,7 @@ var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
 var fs = require('fs');
+var MyModel = require('../dao/define');
 
 
 function createTeam(req, res) {
@@ -173,10 +174,8 @@ function getTeamList(req, res) {
 }
 
 
-function deleteMember(req, res) {
-    if (req.query.memberid == undefined) {
-        res.send(bodymaker.makeJson(7, 'query params "memberid" is expected'));
-    }
+function deleteMemberFromTeam(req, res, memberid, isOut) {
+
     var session = req.cookies['sessionId'];
     var teamid = req.params.teamid;
     account_dao.getUser(session)
@@ -191,7 +190,24 @@ function deleteMember(req, res) {
                     if (t.AdminId != u.id)
                         throw new Error('you are not admin in this team');
 
-                    return t.removeMember(req.query.memberid)
+                    return [t.getProjects(), t.removeMember(req.query.memberid)]
+                })
+                .spread((ps) => {
+                    if (ps == undefined || ps.lenght == 0)
+                        return;
+
+                    var pid = [];
+                    for (var i = 0; i < ps.length; i++) {
+                        pid[i] = ps[i].id;
+                    }
+                    return MyModel.Task.destroy({
+                        where: {
+                            projectId: {
+                                $in: pid
+                            },
+                            AdminId: u.id
+                        }
+                    })
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
@@ -199,6 +215,16 @@ function deleteMember(req, res) {
         }).catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
         })
+}
+
+
+
+function deleteMember(req, res) {
+
+    if (req.query.memberid == undefined) {
+        res.send(bodymaker.makeJson(7, 'query params "memberid" is expected'));
+    }
+    deleteMemberFromTeam(req, res, req.query.memberid, false);
 }
 
 
@@ -338,7 +364,7 @@ function searchTeam(req, res) {
             res.send(JSON.stringify(body));
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1,err.message));
+            res.send(bodymaker.makeJson(1, err.message));
         })
 }
 

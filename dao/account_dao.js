@@ -76,9 +76,8 @@ function getUser(session) {
         where:{
             Session:session
         },
-        include:[{
-            model:MyModel.User
-        }]
+        // attributes:['Session']
+        
     }).then((s)=>
     {
         if(s)

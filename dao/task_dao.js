@@ -6,6 +6,17 @@ function getTaskById(id) {
     return MyModel.Task.findOne({ where: { id: id } });
 }
 
+function getTaskwithProject(id) {
+    return MyModel.Task.findOne(
+        {
+            where: { id: id },
+            include:[{
+                model:MyModel.Project
+            }]
+
+        });
+}
+
 function getAllTasks(user) {
     return user.getTask();
 }
@@ -55,10 +66,12 @@ function setTask(params) {
 
 
 
+
+
 module.exports = {
-    getTaskById,getAllTasks,
-    getUnfinishTask,createTask,
-    setTask
+    getTaskById, getAllTasks,
+    getUnfinishTask, createTask,
+    setTask,getTaskwithProject
 }
 
 //获取任务成员，调用task.getMember()

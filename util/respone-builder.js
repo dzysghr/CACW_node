@@ -179,12 +179,10 @@ function makeTaskMember(user) {
 
 function makeMessage(msg) {
     var m ={
+        id:msg.id,
         type:msg.type,
         content:msg.content,
-        sender:{
-            nickName:msg.sender.nickName,
-            id:msg.sender.id
-        }
+        senderId:msg.senderId
     }
     return m;
 }

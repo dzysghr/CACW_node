@@ -12,6 +12,7 @@ function getMessage(req, res) {
             var mbody = bodymaker.makeMsgArray(msg);
             var body = bodymaker.makeBodyOn(0, '', 'msg', mbody);
             res.send(JSON.stringify(body));
+            return message_dao.deleteMsgArray(msg);
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));

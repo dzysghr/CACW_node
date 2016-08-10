@@ -34,10 +34,16 @@ router.post('/:taskid', function (req, res) {
   task_bll.setTaskInfo(req, res);
 });
 
-//修改任务
+//增加任务成员
 router.post('/:taskid/members', function (req, res) {
-  task_bll.setTaskMember(req, res);
+  task_bll.addTaskMember(req, res);
 });
+
+//删除任务成员
+router.delete('/:taskid/members', function (req, res) {
+  task_bll.removeTaskMember(req, res);
+});
+ 
 
 //删除任务
 router.delete('/:taskid', function (req, res) {

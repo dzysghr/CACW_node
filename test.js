@@ -18,8 +18,21 @@
 // })
 // ;
 
-var a=2;
-var b = 3;
 
-if (!a)
-    console.log('afasdf');
+Array.prototype.contains = function(obj) {
+    var i = this.length;
+    while (i--) {
+        if (this[i] == obj) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+var a=[1,2,3,4,5,6];
+var b = a.contains(1);
+
+console.log(b);
+
+

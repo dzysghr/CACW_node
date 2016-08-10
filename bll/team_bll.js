@@ -192,7 +192,7 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
         
             if (!isOut&&u.id == memberid)//如果是删除成员且要删除的人是自己
                 throw new Error('you can not delete yourself');
-            if(isOut)
+            if(isOut)//如果是退出，则删除的人是自己
                 memberid = u.id;
 
             return team_dao.getTeamByid(teamid)

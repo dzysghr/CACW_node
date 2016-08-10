@@ -88,7 +88,7 @@ function setTaskInfo(req, res) {
         })
 }
 
-function setTaskMember(req, res) {
+function addTaskMember(req, res) {
     account_dao.getUserByReq(req)
         .then(u => {
             return task_dao.getTaskwithProject(req.params.taskid)
@@ -99,22 +99,20 @@ function setTaskMember(req, res) {
                     if (task.AdminId != u.id)
                         throw new Error('you are not admin');
 
-                    return [task, task.project.getTeam()];
-                })
-                .spread((task, team) => {
-
-                    //检查成员里是否有自己
-                    var f = false;
-                    for (var id in body) {
-                        if (id == u.id) {
-                            f = true;
-                            break;
-                        }
-                    }
-                    if (f)
-                        return team.hasMember(body);//检查所有成员是不是都在这个团队
-                    throw new Error('you are not in members');
-
+                    return task.project.getTeam()
+                        .then(t => {
+                            if (t == undefined)
+                                throw new Error(' team not found');
+                            return t.hasMember(req.body);
+                        })
+                        .then((has) => {
+                            if (!has)
+                                throw new Error('some userid are not from the task\'s team');
+                            return task.addMember(req.body, { finish: 1 });
+                        })
+                        .then(() => {
+                            res.send(bodymaker.makeJson(0, ''));
+                        })
                 })
         }).catch(err => {
             res.send(1, err.message);
@@ -122,6 +120,36 @@ function setTaskMember(req, res) {
 
 }
 
+function removeTaskMember(req, res) {
+    account_dao.getUserByReq(req)
+        .then(
+            u => {
+            return task_dao.getTaskwithProject(req.params.taskid)
+                .then((task) => {
+                    if (!task)
+                        throw new Error('task not found');
+
+                    if (task.AdminId != u.id)
+                        throw new Error('you are not admin');
+
+                    for (var i = 0; i < req.body.length; i++) {
+                        if (u.id == req.body[i]) {
+                            throw new Error('you can not remove yourself');
+                        }
+                    }
+                    return task.removeMember(req.body);
+                })
+                .then(() => {
+                    res.send(bodymaker.makeJson(0, ''));
+                })
+        })
+        .catch(err=>{
+
+        })
 
 
-module.exports = { createTask, setTaskInfo, setTaskMember }
+}
+
+
+
+module.exports = { createTask, setTaskInfo, addTaskMember, removeTaskMember }

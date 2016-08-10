@@ -157,6 +157,10 @@ User.belongsToMany(Task,{through:TaskMember,as :'Task'});
 Team.belongsToMany(User,{through:TeamMember,as:'Member'});
 User.belongsToMany(Team,{through:TeamMember,as:'Team'}); //user.getTeam()
 
+
+// User.hasMany(Message,{as:"sender"});
+// User.hasMany(Message,{as:"reciever"});
+
 Message.belongsTo(User,{as:'sender'});
 Message.belongsTo(User,{as:'reciever'});
 

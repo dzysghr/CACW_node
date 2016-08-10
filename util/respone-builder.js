@@ -177,6 +177,27 @@ function makeTaskMember(user) {
     return u;
 }
 
+function makeMessage(msg) {
+    var m ={
+        type:msg.type,
+        content:msg.content,
+        sender:{
+            nickName:msg.sender.nickName,
+            id:msg.sender.id
+        }
+    }
+    return m;
+}
+
+function makeMsgArray(msgs) {
+    if(!msgs||msgs.length==0)
+        return [];
+        var array = []
+    for (var i = 0; i < msgs.length; i++) {
+         array[i] =makeMessage(msgs[i]);
+    }
+    return array;
+}
 
 
 module.exports = {
@@ -193,5 +214,6 @@ module.exports = {
     makeTaskInfo,
     makeTaskInfoArray,
     makeTaskMember,
-    makeTaskMembers
+    makeTaskMembers,
+    makeMsgArray
 };

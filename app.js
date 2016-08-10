@@ -6,6 +6,7 @@ var user = require("./router/user_router")
 var account = require("./router/account_router")
 var project = require("./router/project_router")
 var task = require('./router/task_router')
+var message = require('./router/message_router')
 var formidable = require('formidable')
 var util = require('util')
 var fs = require('fs')
@@ -17,13 +18,15 @@ app.use('/team', team);
 app.use('/project', project);
 app.use('/account', account);
 app.use('/task',task);
+app.use('/message',message);
 
 app.all('/', function (req, res) {
-    console.log(req.query.id);
     console.log("应用实例，主机名 ：%s  IP:%s", req.hostname, req.ip);
     res.send('hello world');
 
 })
+
+
 
 //todo delete
 app.post('/upload', function (req, res) {

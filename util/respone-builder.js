@@ -129,6 +129,54 @@ function makeProjectArray(projects) {
     return list;
 }
 
+function makeTaskInfo(task) {
+    var t={
+        id:task.id,
+        title:task.title,
+        content:task.content,
+        location:task.location,
+        startDate:task.startDate,
+        endDate:task.endDate,
+        AdminId:task.AdminId,
+        project:{
+            id:task.project.id,
+            name:task.project.name
+        }
+    }
+    return t;
+}
+
+function makeTaskInfoArray(tasks) {
+    if(!tasks||tasks.length==0)
+        return [];
+
+    var array = [];
+    for (var i = 0; i < tasks.length; i++) {
+            array[i] = makeTaskInfo(tasks[i]);
+    }
+    return array;
+}
+
+function makeTaskMembers(users) {
+    if(!users||users.length==0)
+        return [];
+        var array = []
+    for (var i = 0; i < users.length; i++) {
+         array[i] =makeTaskMember(users[i]);
+    }
+    return array;
+}
+
+function makeTaskMember(user) {
+    var u={
+        id:user.id,
+        username:user.username,
+        nickName:user.nickName,
+        finish:user.taskmember.finish
+    }
+    return u;
+}
+
 
 
 module.exports = {
@@ -141,5 +189,9 @@ module.exports = {
     makeUserInfoArray,
     makeTeamInfoArray,
     makeProject,
-    makeProjectArray
+    makeProjectArray,
+    makeTaskInfo,
+    makeTaskInfoArray,
+    makeTaskMember,
+    makeTaskMembers
 };

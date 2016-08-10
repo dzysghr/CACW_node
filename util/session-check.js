@@ -8,7 +8,7 @@ function checker(option) {
         //console.log(req.headers);
         var s = req.cookies['sessionId'];
         if (s == undefined) {
-            res.send(bodymaker.makeErrorJson(3, 'can not find sessionId in header'));
+            res.send(bodymaker.makeJson(3, 'can not find sessionId in header'));
             return;
         }
         MyModel.Session.findOne({
@@ -18,12 +18,12 @@ function checker(option) {
             attributes:['Session']
         }).then(s => {
             if (s == undefined) {
-                res.send(bodymaker.makeErrorJson(3, 'session expired,you have aleady logout'));
+                res.send(bodymaker.makeJson(3, 'session expired,you have aleady logout'));
                 return;
             } else
                 next();
         }).catch(err => {
-            res.send(bodymaker.makeErrorJson(3, err));
+            res.send(bodymaker.makeJson(3, err));
         })
     }
 };

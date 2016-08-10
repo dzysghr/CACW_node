@@ -75,15 +75,13 @@ function getUser(session) {
     return MyModel.Session.findOne({
         where:{
             Session:session
-        },
-        // attributes:['Session']
-        
+        }
     }).then((s)=>
     {
         if(s)
             return s.getUser();
         else
-            return false; 
+            return; 
     })
 }
 

@@ -123,7 +123,7 @@ function addTaskMember(req, res) {
 function removeTaskMember(req, res) {
     account_dao.getUserByReq(req)
         .then(
-            u => {
+        u => {
             return task_dao.getTaskwithProject(req.params.taskid)
                 .then((task) => {
                     if (!task)
@@ -143,7 +143,7 @@ function removeTaskMember(req, res) {
                     res.send(bodymaker.makeJson(0, ''));
                 })
         })
-        .catch(err=>{
+        .catch(err => {
 
         })
 
@@ -151,5 +151,80 @@ function removeTaskMember(req, res) {
 }
 
 
+function getTaskList(req, res) {
 
-module.exports = { createTask, setTaskInfo, addTaskMember, removeTaskMember }
+    return account_dao.getUserByReq(req)
+        .then(u => {
+
+            if (req.query.state == 'finished')
+                return task_dao.getFinishedTask(u);
+            if (req.query.state == 'unfinish')
+                return task_dao.getUnfinishTask(u);
+
+            return task_dao.getAllTasks(u);
+        })
+        .then(tasks => {
+
+            var tbody = bodymaker.makeTaskInfoArray(tasks)
+            var body = bodymaker.makeBodyOn(0, '', 'tasks', tbody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+function getTask(req, res) {
+    task_dao.getTaskById(req.params.taskid)
+        .then(t => {
+            if (!t)
+                throw new Error('task not found');
+            var taskbody = bodymaker.makeTaskInfo(t);
+            var body = bodymaker.makeBodyOn(0, '', 'task', taskbody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+
+function getTaskMembers(req, res) {
+    task_dao.getTaskById(req.params.taskid)
+        .then(t => {
+            if (!t)
+                throw new Error('task not fount');
+            return task_dao.getTaskMembers(t);
+        })
+        .then(users => {
+            var userbody = bodymaker.makeTaskMembers(users);
+            var body = bodymaker.makeBodyOn(0, '', 'members', userbody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+function finishTask(req, res) {
+
+
+    account_dao.getUserByReq(req)
+    .then(u => {
+       return  task_dao.getTaskById(req.params.taskid)
+            .then(t => {
+                if (!t)
+                    throw new Error('task not fount');
+                 return task_dao.setTaskFinish(t,u);
+            })
+            .then((c,r) => {
+                res.send(bodymaker.makeJson(0, ''));
+            })
+    })
+    .catch(err => {
+       res.send(bodymaker.makeJson(1, err.message));
+    })
+}
+
+
+module.exports = { finishTask, getTaskMembers, createTask, setTaskInfo, addTaskMember, removeTaskMember, getTaskList, getTask }

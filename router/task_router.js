@@ -18,9 +18,9 @@ router.use(checker())
 router.use(bodyParser.json());
 
 
-//获取任务
+//获取任务列表
 router.get('/list', function (req, res) {
-
+  task_bll.getTaskList(req, res);
 });
 
 
@@ -35,6 +35,12 @@ router.post('/:taskid', function (req, res) {
 });
 
 //增加任务成员
+router.get('/:taskid/members', function (req, res) {
+  task_bll.getTaskMembers(req, res);
+});
+
+
+//增加任务成员
 router.post('/:taskid/members', function (req, res) {
   task_bll.addTaskMember(req, res);
 });
@@ -43,17 +49,23 @@ router.post('/:taskid/members', function (req, res) {
 router.delete('/:taskid/members', function (req, res) {
   task_bll.removeTaskMember(req, res);
 });
- 
+
 
 //删除任务
 router.delete('/:taskid', function (req, res) {
 
 });
 
+//获取任务
+router.get('/:taskid', function (req, res) {
+    task_bll.getTask(req,res);
+});
+
 
 //完成任务
-router.get('/:taskid/finish ', function (req, res) {
-
+router.get('/:taskid/finish', function (req, res) {
+  task_bll.finishTask(req,res);
 });
+
 
 module.exports = router;

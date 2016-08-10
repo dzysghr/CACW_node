@@ -153,6 +153,7 @@ Task.belongsToMany(User,{through:TaskMember,as:'Member'});
 User.belongsToMany(Task,{through:TaskMember,as :'Task'});
 
 
+
 Team.belongsToMany(User,{through:TeamMember,as:'Member'});
 User.belongsToMany(Team,{through:TeamMember,as:'Team'}); //user.getTeam()
 

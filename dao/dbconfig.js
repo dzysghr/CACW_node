@@ -5,7 +5,7 @@ var log = true;
 
 var sequelize = new Sequelize('cacw', 'root', '123', 
 {
-  host: 'localhost',
+  host: '127.0.0.1',
   dialect: 'mysql',
   pool: 
   {

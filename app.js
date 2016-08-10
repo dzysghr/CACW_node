@@ -9,16 +9,16 @@ var task = require('./router/task_router')
 var message = require('./router/message_router')
 var formidable = require('formidable')
 var util = require('util')
-var fs = require('fs')
+var fs = require('fs');
 
 app.use(cookieParser());
-app.use('/images',express.static('image'));
+app.use('/images', express.static('image'));
 app.use('/user', user);
 app.use('/team', team);
 app.use('/project', project);
 app.use('/account', account);
-app.use('/task',task);
-app.use('/message',message);
+app.use('/task', task);
+ app.use('/message',message);
 
 app.all('/', function (req, res) {
     console.log("应用实例，主机名 ：%s  IP:%s", req.hostname, req.ip);

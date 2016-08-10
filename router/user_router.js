@@ -22,7 +22,7 @@ router.use(bodyParser.json());
   
 // });
 
-//个人信息
+//搜索信息
 router.get('/search', function (req, res) {
   user_bll.searchUser(req, res);
 });

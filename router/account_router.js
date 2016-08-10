@@ -4,12 +4,14 @@ var bll = require('../bll/account_bll')
 var bodyParser = require('body-parser')
 
 
-router.use(bodyParser.json);
+
 
 router.use(function timeLog(req, res, next) {
   console.log('访问帐户模块 Time: ', Date.now());
   next();
 });
+
+router.use(bodyParser.json());
 
 router.post('/login',function (req,res) {
     console.log("调用登录接口");

@@ -207,24 +207,44 @@ function getTaskMembers(req, res) {
 }
 
 function finishTask(req, res) {
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return task_dao.getTaskById(req.params.taskid)
+                .then(t => {
+                    if (!t)
+                        throw new Error('task not fount');
+                    return task_dao.setTaskFinish(t, u);
+                })
+                .then((c, r) => {
+                    res.send(bodymaker.makeJson(0, ''));
+                })
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
 
+function deleteTask(req, res) {
 
     account_dao.getUserByReq(req)
-    .then(u => {
-       return  task_dao.getTaskById(req.params.taskid)
-            .then(t => {
-                if (!t)
-                    throw new Error('task not fount');
-                 return task_dao.setTaskFinish(t,u);
-            })
-            .then((c,r) => {
-                res.send(bodymaker.makeJson(0, ''));
-            })
-    })
-    .catch(err => {
-       res.send(bodymaker.makeJson(1, err.message));
-    })
+        .then(u => {
+            return task_dao.getTaskById(req.params.taskid)
+                .then(t => {
+                    if (!t)
+                        throw new Error('task not fount');
+                    if (u.id != t.AdminId)
+                        throw new Error('you are not admin');
+
+                    return t.destroy();
+                })
+                .then(() => {
+                    res.send(bodymaker.makeJson(0, ''));
+                })
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
 }
 
 
-module.exports = { finishTask, getTaskMembers, createTask, setTaskInfo, addTaskMember, removeTaskMember, getTaskList, getTask }
+module.exports = { deleteTask, finishTask, getTaskMembers, createTask, setTaskInfo, addTaskMember, removeTaskMember, getTaskList, getTask }

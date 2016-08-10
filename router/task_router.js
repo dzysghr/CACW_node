@@ -53,7 +53,7 @@ router.delete('/:taskid/members', function (req, res) {
 
 //删除任务
 router.delete('/:taskid', function (req, res) {
-
+  task_bll.deleteTask(req,res);
 });
 
 //获取任务

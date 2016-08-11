@@ -111,7 +111,6 @@ function register(username,psw) {
  */
 
 function getDeviceIds(ids) {
-    
    return  MyModel.Session.findAll({
         where:{
             userId:{

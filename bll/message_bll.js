@@ -2,7 +2,7 @@ var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
 var message_dao = require('../dao/message_dao');
 var user_dao = require('../dao/user_dao');
-//var client = require('../util/push')
+var client = require('../util/push')
 
 
 function getMessage(req, res) {
@@ -39,20 +39,21 @@ function sendMessage(req, res) {
         .then(u => {
             if (u.id == req.body.recieverId)
                 throw new Error('you can send msg to yourself');
-            return user_dao.getUserbyId(req.body.recieverId)
+            return user_dao
+                .getUserbyId(req.body.recieverId)
                 .then(re => {
                     if (!re)
                         throw new Error('reciever not found');
-
                     return message_dao.sendMessage(u, re, req.body.content, req.body.type);
                 })
                 .then(() => {
-                    res.send(bodymaker.makeJson(0, ''));
-                   //return account_dao.getDeviceIds([req.body.recieverId]);
+                    return account_dao.getDeviceIds([req.body.recieverId]);
                 })
-                // .then(deviceids=>{
-                //     return client.pushToDevices(deviceids,req.body.title,req.body.content);
-                // })
+                .then(deviceids => {
+                    if (deviceids.length > 0)
+                        client.pushToDevices(deviceids, req.body.title, req.body.content);
+                    res.send(bodymaker.makeJson(0, ''));
+                })
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));

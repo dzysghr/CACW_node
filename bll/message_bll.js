@@ -20,6 +20,16 @@ function getMessage(req, res) {
 }
 
 function sendMessage(req, res) {
+
+
+    if(req.body.content==undefined)
+    {
+        res.send(bodymaker.makeJson(1,'lack param "content"'));
+    }  
+    if(req.body.type==undefined)
+    {
+        res.send(bodymaker.makeJson(1,'lack param "type"'));        
+    }
     account_dao.getUserByReq(req)
         .then(u => {
             if (u.id == req.body.recieverId)

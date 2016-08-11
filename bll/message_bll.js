@@ -24,7 +24,6 @@ function sendMessage(req, res) {
         .then(u => {
             if (u.id == req.body.recieverId)
                 throw new Error('you can send msg to yourself');
-
             return user_dao.getUserbyId(req.body.recieverId)
                 .then(re => {
                     if (!re)

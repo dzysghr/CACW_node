@@ -27,7 +27,7 @@ function setUserInfo(user, params) {
     user.nickName = params.nickName == undefined ? user.nickName : params.nickName;
     user.summary = params.summary == undefined ? user.summary : params.summary;
     user.mobilePhone = params.mobilePhone == undefined ? user.mobilePhone : params.mobilePhone;
-    user.sex = params.sex == undefined ? user.sex : user.sex;
+    user.sex = params.sex == undefined ? user.sex : params.sex;
     user.address = params.address == undefined ? user.address : params.address;
     user.shortNumber = params.shortNumber == undefined ? user.shortNumber : params.shortNumber;
     user.mobilePhone = params.mobilePhone == undefined ? user.mobilePhone : params.mobilePhone;

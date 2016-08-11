@@ -7,7 +7,7 @@ function onLogin(req, res) {
 
     var username = req.body.username;
     var psw = req.body.psw;
-    var deviceId=  req.body.deviceId;
+    var deviceId = req.body.deviceId;
     if (username == undefined || psw == undefined||deviceId==undefined) {
         res.send(bodymaker.makeJson(7, 'please check your params ,and set (Content-Type:application/json) in your header'));
         return;

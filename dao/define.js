@@ -92,6 +92,9 @@ var Message = sequelize.define('message', {
   id: {
     type: Sequelize.INTEGER, autoIncrement: true,primaryKey: true
   },
+  title: {
+    type: Sequelize.STRING
+  },
   content: {
     type: Sequelize.STRING
   },

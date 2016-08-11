@@ -28,8 +28,6 @@ function login(username,psw){
   });
 }
 
-
-
 /**
  * 写入session,返回session
  * @param {any} user 用户
@@ -104,7 +102,35 @@ function register(username,psw) {
     );
 }
 
-module.exports = {register,login,logout,saveSession,getUser,getUserByReq}
+
+/**
+ * 
+ *  通过用户id获取设备id
+ * @param {Array} ids 用户id数组
+ * @returns {Array} 设备id 数组
+ */
+
+function getDeviceIds(ids) {
+    
+   return  MyModel.Session.findAll({
+        where:{
+            userId:{
+                $in: ids
+            }
+        },
+         attributes:['deviceId']
+    })
+    .then(ss=>{
+        var array = [];
+        for (var i = 0; i < ss.length; i++) {
+            array[i] =  ss[i].deviceId;
+        }
+        return array;
+    })
+}
+
+
+module.exports = {register,login,logout,saveSession,getUser,getUserByReq,getDeviceIds}
 
 
 

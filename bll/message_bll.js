@@ -2,6 +2,8 @@ var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
 var message_dao = require('../dao/message_dao');
 var user_dao = require('../dao/user_dao');
+//var client = require('../util/push')
+
 
 function getMessage(req, res) {
     account_dao.getUserByReq(req)
@@ -20,16 +22,19 @@ function getMessage(req, res) {
 }
 
 function sendMessage(req, res) {
-
-
-    if(req.body.content==undefined)
-    {
-        res.send(bodymaker.makeJson(1,'lack param "content"'));
-    }  
-    if(req.body.type==undefined)
-    {
-        res.send(bodymaker.makeJson(1,'lack param "type"'));        
+    if (req.body.content == undefined) {
+        res.send(bodymaker.makeJson(1, 'lack param (content)'));
     }
+    if (req.body.type == undefined) {
+        res.send(bodymaker.makeJson(1, 'lack param (type)'));
+    }
+    if (req.body.recieverId == undefined) {
+        res.send(bodymaker.makeJson(1, 'lack param (recieverId)'));
+    }
+    if (req.body.title == undefined) {
+        res.send(bodymaker.makeJson(1, 'lack param (title)'));
+    }
+
     account_dao.getUserByReq(req)
         .then(u => {
             if (u.id == req.body.recieverId)
@@ -43,7 +48,11 @@ function sendMessage(req, res) {
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
+                   //return account_dao.getDeviceIds([req.body.recieverId]);
                 })
+                // .then(deviceids=>{
+                //     return client.pushToDevices(deviceids,req.body.title,req.body.content);
+                // })
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));

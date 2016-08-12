@@ -3,7 +3,7 @@ var account_dao = require('../dao/account_dao');
 var project_dao = require('../dao/project_dao');
 var team_dao = require('../dao/team_dao');
 var task_dao = require('../dao/task_dao');
-
+var client = require('../util/push')
 
 function createTask(req, res) {
     var body = req.body;
@@ -33,7 +33,7 @@ function createTask(req, res) {
                             break;
                         }
                     }
-                    if (f)
+                    if (f)//有自己
                         return t.hasMember(body.members);//检查所有成员是不是都在这个团队
 
                     throw new Error('you are not in members');
@@ -50,7 +50,13 @@ function createTask(req, res) {
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
+                    //return account_dao.getDeviceIds(req.body.members);
                 })
+                // .then(deviceids => {
+                //     if (deviceids.length > 0)
+                //         client.pushToDevices(deviceids,"新任务", req.body.content);
+                // })
+
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));

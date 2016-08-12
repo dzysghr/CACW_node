@@ -47,12 +47,12 @@ function sendMessage(req, res) {
                     return message_dao.sendMessage(u, re, req.body.content, req.body.type);
                 })
                 .then(() => {
+                    res.send(bodymaker.makeJson(0, ''));
                     return account_dao.getDeviceIds([req.body.recieverId]);
                 })
                 .then(deviceids => {
                     if (deviceids.length > 0)
-                        client.pushToDevices(deviceids, req.body.title, req.body.content);
-                    res.send(bodymaker.makeJson(0, ''));
+                        client.pushToDevices(deviceids,req.body.title, req.body.content);
                 })
         })
         .catch(err => {

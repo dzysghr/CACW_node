@@ -46,16 +46,21 @@ function createTask(req, res) {
                 .then(t => {
                     if (t == undefined)
                         throw new Error('task create error');
+                    req.tid = t.id;
                     return t.setMember(req.body.members, { finish: 1 });
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
-                    //return account_dao.getDeviceIds(req.body.members);
+                    return account_dao.getDeviceIds(req.body.members);
                 })
-                // .then(deviceids => {
-                //     if (deviceids.length > 0)
-                //         client.pushToDevices(deviceids,"新任务", req.body.content);
-                // })
+                .then(deviceids => {
+                    if (deviceids.length > 0)
+                    {
+                        var content = bodymaker.makePushContentJson('tk',req.tid,'你被加入新任务 '+req.body.title);
+                        client.pushToDevices(deviceids,"新任务",content);
+                    }
+                        
+                })
 
         })
         .catch(err => {

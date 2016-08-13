@@ -198,6 +198,15 @@ function makeMsgArray(msgs) {
 }
 
 
+function makePushContentJson(type,id,content) {
+    var t={
+        type:type,
+        id:id,
+        content:content
+    }
+    return JSON.stringify(t);
+}
+
 module.exports = {
     makeTeamInfo,
     makeBody,
@@ -213,5 +222,6 @@ module.exports = {
     makeTaskInfoArray,
     makeTaskMember,
     makeTaskMembers,
-    makeMsgArray
+    makeMsgArray,
+    makePushContentJson
 };

@@ -52,7 +52,11 @@ function sendMessage(req, res) {
                 })
                 .then(deviceids => {
                     if (deviceids.length > 0)
-                        client.pushToDevices(deviceids,req.body.title, req.body.content);
+                    {
+                        var content = bodymaker.makePushContentJson('ms',u.id,req.body.content);
+                        client.pushToDevices(deviceids,req.body.title,content);
+                    }
+                        
                 })
         })
         .catch(err => {

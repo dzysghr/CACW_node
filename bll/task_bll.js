@@ -51,7 +51,18 @@ function createTask(req, res) {
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
-                    return account_dao.getDeviceIds(req.body.members);
+
+                    //去掉自己
+                    var member = body.members;
+                    for (var i = 0; i < member.length; i++) {
+                          if(member[i]==u.id)
+                          {
+                              member.splice(i, 1);
+                              break;
+                          }
+                    }
+
+                    return account_dao.getDeviceIds(member);
                 })
                 .then(deviceids => {
                     if (deviceids.length > 0)

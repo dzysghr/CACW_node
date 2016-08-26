@@ -61,7 +61,6 @@ function createTask(req, res) {
                               break;
                           }
                     }
-
                     return account_dao.getDeviceIds(member);
                 })
                 .then(deviceids => {
@@ -247,7 +246,7 @@ function finishTask(req, res) {
 }
 
 function deleteTask(req, res) {
-
+    var task;
     account_dao.getUserByReq(req)
         .then(u => {
             return task_dao.getTaskById(req.params.taskid)
@@ -256,15 +255,35 @@ function deleteTask(req, res) {
                         throw new Error('task not fount');
                     if (u.id != t.AdminId)
                         throw new Error('you are not admin');
-
+                    task = t;
+                    console.log('delete task');
                     return t.destroy();
                 })
                 .then(() => {
+                    console.log('delete succeed');
+                
                     res.send(bodymaker.makeJson(0, ''));
+                    return task_dao.getTaskMembers(task);
+                })
+                .then(member=>{
+                    var array = [];
+                    for (var i = 0; i < member.length; i++) {
+                          if(member[i]!=u.id)
+                          {
+                              array.push(member[i].id);
+                          }
+                    }
+                    return account_dao.getDeviceIds(array);
+                })
+                .then(ids=>{
+                    console.log('get member id ');                    
+                    console.log(ids);
+                    client.pushToDevices(ids,'任务动态','任务 :'+task.title+' 已经被删除');
                 })
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
+            console.log(err.message);
         })
 }
 

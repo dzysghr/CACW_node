@@ -7,7 +7,7 @@ function pushToDevices(ids,title,content) {
     client.push()
     .setPlatform('android')
     .setAudience(JPush.registration_id(ids))
-    .setMessage(content,title)
+    .setMessage(contentjson,title)
     .send(function(err, res) {
         if (err) {
             console.log(err.message);
@@ -16,7 +16,6 @@ function pushToDevices(ids,title,content) {
             console.log('Msg_id: ' + res.msg_id);
         }
     });
-
 }
 
 module.exports={pushToDevices}

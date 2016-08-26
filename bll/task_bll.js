@@ -55,21 +55,19 @@ function createTask(req, res) {
                     //去掉自己
                     var member = body.members;
                     for (var i = 0; i < member.length; i++) {
-                          if(member[i]==u.id)
-                          {
-                              member.splice(i, 1);
-                              break;
-                          }
+                        if (member[i] == u.id) {
+                            member.splice(i, 1);
+                            break;
+                        }
                     }
                     return account_dao.getDeviceIds(member);
                 })
                 .then(deviceids => {
-                    if (deviceids.length > 0)
-                    {
-                        var content = bodymaker.makePushContentJson('tk',req.tid,'你被加入新任务 '+req.body.title);
-                        client.pushToDevices(deviceids,"新任务",content);
+                    if (deviceids.length > 0) {
+                        var content = bodymaker.makePushContentJson('tk', req.tid, '你被加入新任务 ' + req.body.title);
+                        client.pushToDevices(deviceids, "新任务", content);
                     }
-                        
+
                 })
 
         })
@@ -133,6 +131,12 @@ function addTaskMember(req, res) {
                         })
                         .then(() => {
                             res.send(bodymaker.makeJson(0, ''));
+                            //通知成员
+                            return account_dao.getDeviceIds(req.body);
+                        })
+                        .then(ids => {
+                            var content = bodymaker.makePushContentJson('tk', task.id, '你被加入任务 ' + task.title);
+                            client.pushToDevices(ids, '任务动态', content);
                         })
                 })
         }).catch(err => {
@@ -261,24 +265,24 @@ function deleteTask(req, res) {
                 })
                 .then(() => {
                     console.log('delete succeed');
-                
+
                     res.send(bodymaker.makeJson(0, ''));
                     return task_dao.getTaskMembers(task);
                 })
-                .then(member=>{
+                .then(member => {
                     var array = [];
                     for (var i = 0; i < member.length; i++) {
-                          if(member[i]!=u.id)
-                          {
-                              array.push(member[i].id);
-                          }
+                        if (member[i] != u.id) {
+                            array.push(member[i].id);
+                        }
                     }
                     return account_dao.getDeviceIds(array);
                 })
-                .then(ids=>{
-                    console.log('get member id ');                    
+                .then(ids => {
+                    console.log('get member id ');
                     console.log(ids);
-                    client.pushToDevices(ids,'任务动态','任务 :'+task.title+' 已经被删除');
+                    var content = bodymaker.makePushContentJson('nm','', '任务:'+ task.title+' 被删除');
+                    client.pushToDevices(ids, '任务动态',content);
                 })
         })
         .catch(err => {

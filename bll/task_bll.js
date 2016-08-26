@@ -135,7 +135,7 @@ function addTaskMember(req, res) {
                         })
                         .then(ids => {
                             var content = bodymaker.makePushContentJson('tk', task.id, '你被加入任务 ' + task.title);
-                            client.pushToDevices(ids,'任务动态', content);
+                            client.pushToDevices(ids, '任务动态', content);
                         })
                 })
         }).catch(err => {
@@ -146,6 +146,7 @@ function addTaskMember(req, res) {
 }
 
 function removeTaskMember(req, res) {
+    var out;
     account_dao.getUserByReq(req)
         .then(
         u => {
@@ -162,14 +163,21 @@ function removeTaskMember(req, res) {
                             throw new Error('you can not remove yourself');
                         }
                     }
+                    out = task;
                     return task.removeMember(req.body);
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
+                    return account_dao.getDeviceIds(req.body);
+                })
+                .then(ids => {
+                    var content = bodymaker.makePushContentJson('nm',out.id, '你被移出任务 ' + out.title);
+                    client.pushToDevices(ids, '任务动态', content);
                 })
         })
         .catch(err => {
-
+            res.send(1, err.message);
+            console.log(err.message);
         })
 }
 
@@ -279,8 +287,8 @@ function deleteTask(req, res) {
                 .then(ids => {
                     console.log('get member id ');
                     console.log(ids);
-                    var content = bodymaker.makePushContentJson('nm','', '任务:'+ task.title+' 被删除');
-                    client.pushToDevices(ids, '任务动态',content);
+                    var content = bodymaker.makePushContentJson('nm', '', '任务:' + task.title + ' 被删除');
+                    client.pushToDevices(ids, '任务动态', content);
                 })
         })
         .catch(err => {

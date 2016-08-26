@@ -90,7 +90,6 @@ function setTaskInfo(req, res) {
             if (t.AdminId != u.id)
                 throw new Error('you are not admin');
 
-
             var body = req.body;
             t.title = body.title || t.title;
             t.content = body.content || t.content;
@@ -136,11 +135,12 @@ function addTaskMember(req, res) {
                         })
                         .then(ids => {
                             var content = bodymaker.makePushContentJson('tk', task.id, '你被加入任务 ' + task.title);
-                            client.pushToDevices(ids, '任务动态', content);
+                            client.pushToDevices(ids,'任务动态', content);
                         })
                 })
         }).catch(err => {
             res.send(1, err.message);
+            console.log(err.message);
         })
 
 }
@@ -171,8 +171,6 @@ function removeTaskMember(req, res) {
         .catch(err => {
 
         })
-
-
 }
 
 

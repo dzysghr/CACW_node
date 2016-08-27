@@ -3,7 +3,7 @@ var account_dao = require('../dao/account_dao');
 var project_dao = require('../dao/project_dao');
 var team_dao = require('../dao/team_dao');
 var task_dao = require('../dao/task_dao');
-var client = require('../util/push')
+var client = require('../util/push');
 
 function createTask(req, res) {
     var body = req.body;

@@ -1,6 +1,5 @@
-var JPush = require("JPush-sdk");
+var JPush = require("jpush-sdk");
 var client = JPush.buildClient('e1ddf6b7d3bb9c6ba2545a55', 'f8dd58cf4736e59d58a28432');
-
 
 
 function pushToDevices(ids,title,content) {

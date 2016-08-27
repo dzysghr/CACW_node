@@ -55,8 +55,7 @@ function sendMessage(req, res) {
                     {
                         var content = bodymaker.makePushContentJson('ms',u.id,req.body.content);
                         client.pushToDevices(deviceids,req.body.title,content);
-                    }
-                        
+                    } 
                 })
         })
         .catch(err => {

@@ -85,8 +85,14 @@ var Project = sequelize.define('project', {
       key:'id'
     },
     onDelete:'CASCADE'
+  },
+  //是否归档，0为否，其他为是
+  file:{
+    type:Sequelize.INTEGER,defaultValue:0
   }
 },{charset:'utf8'});
+
+
 //消息定义
 var Message = sequelize.define('message', {
   id: {

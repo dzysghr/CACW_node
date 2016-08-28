@@ -67,6 +67,13 @@ var Task = sequelize.define('task', {
       key:'id'
     },
     onDelete:'CASCADE'
+  },
+  AdminId:{
+    type: Sequelize.INTEGER,
+    references: {
+     model: User,
+     key: 'id'
+   }
   }
 },{charset:'utf8'});
 

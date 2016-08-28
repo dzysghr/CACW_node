@@ -30,9 +30,7 @@ Array.prototype.contains = function(obj) {
 }
 
 
-var a=[1,2,3,4,5,6];
-var b = a.contains(1);
-
-console.log(b);
-
-
+var a =  {id:2};
+var b = a;
+a.id = 4;
+console.log(b)

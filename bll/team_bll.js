@@ -4,7 +4,7 @@ var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
 var fs = require('fs');
 var MyModel = require('../dao/define');
-
+var client = require('../util/push');
 
 function createTeam(req, res) {
     var teamname = req.params.teamname;
@@ -186,31 +186,38 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
 
     var session = req.cookies['sessionId'];
     var teamid = req.params.teamid;
-
+    var reciever = memberid; ////删除后通知被删除的人
+    var team;
     account_dao.getUser(session)
         .then(u => {
-        
-            if (!isOut&&u.id == memberid)//如果是删除成员且要删除的人是自己
+
+            if (!isOut && u.id == memberid)//如果是删除成员且要删除的人是自己
                 throw new Error('you can not delete yourself');
-            if(isOut)//如果是退出，则删除的人是自己
-                memberid = u.id;
+
 
             return team_dao.getTeamByid(teamid)
                 .then(t => {
                     if (t == undefined)
                         throw new Error('team not found');
+                    team = t;
 
-                    if (!isOut &&t.AdminId != u.id)//如果是要删除成员但自己不是管理员
+                    if (!isOut && t.AdminId != u.id)//如果是要删除成员但自己不是管理员
                         throw new Error('you are not admin in this team');
 
-                    if(isOut&& t.AdminId==u.id)  //如果是要退出团队但自己是管理员
+                    if (isOut && t.AdminId == u.id)  //如果是要退出团队但自己是管理员
                         throw new Error('you are admin in this team');
+
+                    if (isOut)//如果是退出，则删除的人是自己
+                    {
+                        memberid = u.id;
+                        reciever = t.AdminId;//删除后通知团队管理员
+                    }
 
                     return [t.getProjects(), t.removeMember(memberid)]//删除这个人的成员身份,再删除这个人的一些痕迹
                 })
                 //获取团队的所有项目
                 .spread((ps) => {
-                    
+
                     if (ps == undefined || ps.lenght == 0)
                         return;
 
@@ -230,7 +237,24 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
                 })
                 .then(() => {
                     res.send(bodymaker.makeJson(0, ''));
-                }) 
+
+                    return account_dao.getDeviceIds([reciever]);
+                })
+                .then(ids => {
+                   if (ids.length > 0) {
+                        var content;
+                        if (reciever == memberid)
+                           content  = bodymaker.makePushContentJson('nm','','你已经被移出团队 '+team.teamName);
+                        else
+                            content  = bodymaker.makePushContentJson('nm','','团队成员 '+u.nickName+'已经退出团队 '+team.teamName);
+                        client.pushToDevices(ids, '团队消息', content);
+
+                        console.log('推送成员删除消息 '+content);
+                    }
+                })
+                .then(()=>{},err=>{
+                    console.log('推送成员删除消息失败 '+err.message);
+                })
         }).catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
         })
@@ -248,7 +272,7 @@ function deleteMember(req, res) {
 
 
 function leaveTeam(req, res) {
-    deleteMemberFromTeam(req,res,{},true)
+    deleteMemberFromTeam(req, res, {}, true)
 }
 
 function dissolveTeam(req, res) {

@@ -69,7 +69,6 @@ function createTask(req, res) {
                     }
 
                 })
-
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -134,8 +133,11 @@ function addTaskMember(req, res) {
                             return account_dao.getDeviceIds(req.body);
                         })
                         .then(ids => {
-                            var content = bodymaker.makePushContentJson('tk', task.id, '你被加入任务 ' + task.title);
-                            client.pushToDevices(ids, '任务动态', content);
+                            if (ids.length > 0) {
+                                var content = bodymaker.makePushContentJson('tk', task.id, '你被加入任务 ' + task.title);
+                                client.pushToDevices(ids, '任务动态', content);
+                            }
+
                         })
                 })
         }).catch(err => {
@@ -171,8 +173,10 @@ function removeTaskMember(req, res) {
                     return account_dao.getDeviceIds(req.body);
                 })
                 .then(ids => {
-                    var content = bodymaker.makePushContentJson('nm',out.id, '你被移出任务 ' + out.title);
-                    client.pushToDevices(ids, '任务动态', content);
+                    if (ids.length > 0) {
+                        var content = bodymaker.makePushContentJson('nm', out.id, '你被移出任务 ' + out.title);
+                        client.pushToDevices(ids, '任务动态', content);
+                    }
                 })
         })
         .catch(err => {
@@ -287,8 +291,10 @@ function deleteTask(req, res) {
                 .then(ids => {
                     console.log('get member id ');
                     console.log(ids);
-                    var content = bodymaker.makePushContentJson('nm', '', '任务:' + task.title + ' 被删除');
-                    client.pushToDevices(ids, '任务动态', content);
+                    if (ids.length > 0) {
+                        var content = bodymaker.makePushContentJson('nm', '', '任务:' + task.title + ' 被删除');
+                        client.pushToDevices(ids, '任务动态', content);
+                    }
                 })
         })
         .catch(err => {

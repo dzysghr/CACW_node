@@ -6,9 +6,28 @@ var team_dao = require('../dao/team_dao');
 
 
 
+function createProject(req,res)
+{
+    if(req.body.teamid==undefined)
+        createPriveteProject(req,res);
+    else
+     createTeamProject(req, res);
+}
+
 function createPriveteProject(req,res)
 {
-    
+     account_dao.getUserByReq(req)
+        .then(u => {
+             if (req.body.projectname == undefined)
+                throw new Error('post params projectname not found');
+             return project_dao.createPrivateProject(u,req.body.projectname);
+        })
+        .then(()=>{
+             res.send(bodymaker.makeJson(0, ''));
+        })
+         .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
 }
 
 
@@ -130,7 +149,7 @@ function getProjectTask(req,res) {
    
 
 }
-module.exports = { createTeamProject,
+module.exports = { createProject,
      deleteProject ,
      getProjectList,
      getProjectInfo,

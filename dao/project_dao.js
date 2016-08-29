@@ -11,6 +11,15 @@ function createProject(team, projectname) {
     })
 }
 
+function createPrivateProject(user,projectname) {
+    return MyModel.Project.create({
+        name: projectname,
+        isPrivate:1,
+        AdminId:user.id
+    });
+}
+
+
 //获取团队项目列表
 function getProjectByTeam(team) {
     return MyModel.Project.findAll({
@@ -92,6 +101,7 @@ function getProjectTask(pid,state)
 
 module.exports ={
     createProject,
+    createPrivateProject,
     getProjectByTeam,
     getTeamProjectCount,
     getProjectsByUser,

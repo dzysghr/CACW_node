@@ -5,7 +5,14 @@ var project_dao = require('../dao/project_dao');
 var team_dao = require('../dao/team_dao');
 
 
-function createProject(req, res) {
+
+function createPriveteProject(req,res)
+{
+    
+}
+
+
+function createTeamProject(req, res) {
     account_dao.getUserByReq(req)
         .then(u => {
             var teamid = req.body.teamid;
@@ -112,7 +119,7 @@ function getProjectTask(req,res) {
         .then(has=>{
             if(has)
             {
-                
+                //todo
             }
 
         })
@@ -123,7 +130,7 @@ function getProjectTask(req,res) {
    
 
 }
-module.exports = { createProject,
+module.exports = { createTeamProject,
      deleteProject ,
      getProjectList,
      getProjectInfo,

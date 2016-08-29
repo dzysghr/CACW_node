@@ -125,7 +125,7 @@ function addTaskMember(req, res) {
                         .then((has) => {
                             if (!has)
                                 throw new Error('some userid are not from the task\'s team');
-                            return task.addMember(req.body, { finish: 1 });
+                            return task.addMember(req.body);
                         })
                         .then(() => {
                             res.send(bodymaker.makeJson(0, ''));
@@ -199,7 +199,6 @@ function getTaskList(req, res) {
             return task_dao.getAllTasks(u);
         })
         .then(tasks => {
-
             var tbody = bodymaker.makeTaskInfoArray(tasks)
             var body = bodymaker.makeBodyOn(0, '', 'tasks', tbody);
             res.send(JSON.stringify(body));
@@ -248,6 +247,9 @@ function finishTask(req, res) {
                 .then(t => {
                     if (!t)
                         throw new Error('task not fount');
+                    if(t.AdminId!=u.id)
+                        throw new Error('you are not admin');
+                    //todo 通知任务完成
                     return task_dao.setTaskFinish(t, u);
                 })
                 .then((c, r) => {
@@ -304,4 +306,12 @@ function deleteTask(req, res) {
 }
 
 
-module.exports = { deleteTask, finishTask, getTaskMembers, createTask, setTaskInfo, addTaskMember, removeTaskMember, getTaskList, getTask }
+module.exports = { deleteTask, 
+    finishTask,
+     getTaskMembers,
+      createTask, 
+      setTaskInfo, 
+      addTaskMember, 
+      removeTaskMember, 
+      getTaskList, 
+      getTask }

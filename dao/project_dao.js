@@ -63,9 +63,11 @@ function getProjectsByUser(user) {
         //找出项目所属团队在id列表中
         return MyModel.Project.findAll({
             where: {
-                teamId: {
-                    $in: list
-                }
+                $or:
+                [
+                    {teamId: {$in:list}},
+                    {AdminId : user.id}
+                ]
             },
             include:[{
                 model:MyModel.Team

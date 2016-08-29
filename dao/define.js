@@ -68,12 +68,8 @@ var Task = sequelize.define('task', {
     },
     onDelete:'CASCADE'
   },
-  AdminId:{
-    type: Sequelize.INTEGER,
-    references: {
-     model: User,
-     key: 'id'
-   }
+  finish: {
+    type: Sequelize.INTEGER //0 为未完成  1 为完成
   }
 },{charset:'utf8'});
 
@@ -96,6 +92,10 @@ var Project = sequelize.define('project', {
   //是否归档，0为否，其他为是
   file:{
     type:Sequelize.INTEGER,defaultValue:0
+  },
+  //是否为私人项目，0为否，1为是
+  isPrivate:{
+     type:Sequelize.INTEGER,defaultValue:0
   }
 },{charset:'utf8'});
 
@@ -147,9 +147,6 @@ var Session = sequelize.define('session', {
 },{charset:'utf8'});
 
 var TaskMember = sequelize.define('taskmember', {
-  finish: {
-    type: Sequelize.INTEGER //1 为未完成  2 为完成
-  }
 },{charset:'utf8'});
 
 var TeamMember = sequelize.define('teammember',{
@@ -182,6 +179,7 @@ Message.belongsTo(User,{as:'reciever'});
 
 Task.belongsTo(User,{as:'Admin'});
 Team.belongsTo(User,{as:'Admin'});
+Project.belongsTo(User,{as:'Admin'});
 
 Session.belongsTo(User);
 

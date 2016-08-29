@@ -12,10 +12,10 @@ function getTaskById(id) {
         });
 }
 
-function getTaskwithProject(id) {
+function getTaskwithProject(tid) {
     return MyModel.Task.findOne(
         {
-            where: { id: id },
+            where: { id: tid },
             include: [{
                 model: MyModel.Project
             }]
@@ -34,32 +34,41 @@ function getAllTasks(user) {
 }
 
 function getFinishedTask(user) {
-    return getAllTasks(user)
-        .then(ts => {
-            if (ts.length == 0)
-                return;
-            var tlist = [];
-            for (var i = 0; i < ts.length; i++) {
-                if (ts[i].taskmember.finish == 2)
-                    tlist[i] = ts[i];
-            }
-            return tlist;
-        })
+    return user.getTask(
+        {
+            where:{
+                finish:1
+            },
+            include: [{
+                model: MyModel.Project
+            }]
+        }
+    );
+    // return getAllTasks(user)
+    //     .then(ts => {
+    //         if (ts.length == 0)
+    //             return;
+    //         var tlist = [];
+    //         for (var i = 0; i < ts.length; i++) {
+    //             if (ts[i].finish == 1)
+    //                 tlist[i] = ts[i];
+    //         }
+    //         return tlist;
+    //     })
 }
 
 
 function getUnfinishTask(user) {
-    return getAllTasks(user)
-        .then(ts => {
-            if (ts.length == 0)
-                return;
-            var tlist = [];
-            for (var i = 0; i < ts.length; i++) {
-                if (ts[i].taskmember.finish == 1)
-                    tlist[i] = ts[i];
-            }
-            return tlist;
-        })
+    return user.getTask(
+        {
+            where:{
+                finish:0
+            },
+            include: [{
+                model: MyModel.Project
+            }]
+        }
+    );
 }
 
 
@@ -72,7 +81,8 @@ function createTask(taskparams, user) {
         endDate: taskparams.endDate,
         location: taskparams.location,
         projectId: taskparams.projectId,
-        AdminId: user.id
+        AdminId: user.id,
+        finish: 0
     });
 }
 
@@ -96,17 +106,13 @@ function getTaskMembers(task) {
 
 
 function setTaskFinish(task, user) {
-    return MyModel.TaskMember.update({
-        finish: 2
-    }, {
+    return MyModel.Task.update({ finish: 1}, 
+        {
             where: {
-                userId: user.id,
                 taskId: task.id
-            },
-            fields: ['finish']
+            }
         })
 }
-
 
 module.exports = {
     getTaskById, getAllTasks, getFinishedTask,

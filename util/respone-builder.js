@@ -138,6 +138,7 @@ function makeTaskInfo(task) {
         startDate:task.startDate,
         endDate:task.endDate,
         AdminId:task.AdminId,
+        finish:task.finish,
         project:{
             id:task.project.id,
             name:task.project.name
@@ -171,8 +172,7 @@ function makeTaskMember(user) {
     var u={
         id:user.id,
         username:user.username,
-        nickName:user.nickName,
-        finish:user.taskmember.finish
+        nickName:user.nickName
     }
     return u;
 }

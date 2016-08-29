@@ -84,7 +84,9 @@ function getProjectById(id) {
 });
 }
 
-
+function getProjectTask(pid,state)
+{
+}
 
 module.exports ={
     createProject,
@@ -92,5 +94,6 @@ module.exports ={
     getTeamProjectCount,
     getProjectsByUser,
     getProjectById,
-    getProjectByTeamArray
+    getProjectByTeamArray,
+    getProjectTask
 }

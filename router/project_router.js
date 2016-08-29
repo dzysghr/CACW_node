@@ -41,7 +41,7 @@ router.get('/:id', function (req, res) {
 
 //获取项目任务
 router.post('/:id/tasks', function (req, res) {
-  req.send('还没有写，啦啦啦');
+   project_bll.getProjectTask(req.res);
 });
 
 

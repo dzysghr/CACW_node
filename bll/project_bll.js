@@ -92,8 +92,40 @@ function getProjectInfo(req,res)
         res.send(bodymaker.makeJson(1,err.message));
     })
 }
+
+function getProjectTask(req,res) {
+    
+    var pj;
+    account_dao.getUserByReq(req)
+    .then(u=>{
+
+         return project_dao.getProjectById(req.id)
+        .then(p=>{
+            if(!p)
+                throw new Error('project not found');
+            pj  = p;
+            return p.getTeam()
+        })
+        .then(t=>{
+            return t.hasMember(u.id)
+        })
+        .then(has=>{
+            if(has)
+            {
+                
+            }
+
+        })
+
+    });
+
+
+   
+
+}
 module.exports = { createProject,
      deleteProject ,
      getProjectList,
-     getProjectInfo
+     getProjectInfo,
+     getProjectTask
     }

@@ -6,26 +6,24 @@ var team_dao = require('../dao/team_dao');
 
 
 
-function createProject(req,res)
-{
-    if(req.body.teamid==undefined)
-        createPriveteProject(req,res);
+function createProject(req, res) {
+    if (req.body.teamid == undefined)
+        createPriveteProject(req, res);
     else
-     createTeamProject(req, res);
+        createTeamProject(req, res);
 }
 
-function createPriveteProject(req,res)
-{
-     account_dao.getUserByReq(req)
+function createPriveteProject(req, res) {
+    account_dao.getUserByReq(req)
         .then(u => {
-             if (req.body.projectname == undefined)
+            if (req.body.projectname == undefined)
                 throw new Error('post params projectname not found');
-             return project_dao.createPrivateProject(u,req.body.projectname);
+            return project_dao.createPrivateProject(u, req.body.projectname);
         })
-        .then(()=>{
-             res.send(bodymaker.makeJson(0, ''));
+        .then(() => {
+            res.send(bodymaker.makeJson(0, ''));
         })
-         .catch(err => {
+        .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
         })
 }
@@ -86,92 +84,115 @@ function getProjectList(req, res) {
         .then(u => {
 
             var state;
-            var file;
-            if(req.params.state==undefined||req.params.state=='all')
-                state = 'all';
-            else if(req.params.type=='private')
-                state='private';
-            else 
+            var type;
+            type = req.params.type || 'all';
+            if (type != 'private' || type != 'all')
                 throw new Error('error type');
-            
-            if(req.params.state==undefined||req.params.state=='unfile')
-                file = 'unfile';
-            else if(req.params.state=='all')
-                file = 'all';
-            else if(req.params.state=='file')
-                file = 'file';
-            else 
-                throw new Error('error state');
-            
-            if(state=='private')
-                return project_dao.getPrivateProject(u,state);
+
+            state = req.params.state || 'unfile';
+
+            if (state != 'all' || state != 'unfile' || state != 'file')
+                throw new Error('error state ' + type);
+
+            if (type == 'private')
+                return project_dao.getPrivateProject(u, state);
             else
-                return project_dao.getAllProjects(u,state);
+                return project_dao.getAllProjects(u, state);
         })
-        .then(projects=>{
-            
+        .then(projects => {
             var pbody = bodymaker.makeProjectArray(projects);
-            var body = bodymaker.makeBodyOn(0,'','projects',pbody);
+            var body = bodymaker.makeBodyOn(0, '', 'projects', pbody);
 
             res.send(JSON.stringify(body));
 
         })
-        .catch(err=>{
-            res.send(bodymaker.makeJson(1,err.message));
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
         })
 }
 
-function getProjectInfo(req,res)
-{
+function getProjectInfo(req, res) {
     var id = req.params.id;
     project_dao.getProjectById(id)
-    .then(p=>{
-        if(p==undefined)
-            throw new Error('project not found');
-        
-        
-        var pbody = bodymaker.makeProject(p);
-        var body = bodymaker.makeBodyOn(0,'','project',pbody);
-        res.send(JSON.stringify(body));
-    })
-    .catch(err=>{
-        res.send(bodymaker.makeJson(1,err.message));
-    })
+        .then(p => {
+            if (p == undefined)
+                throw new Error('project not found');
+
+
+            var pbody = bodymaker.makeProject(p);
+            var body = bodymaker.makeBodyOn(0, '', 'project', pbody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
 }
 
-function getProjectTask(req,res) {
+function getProjectTask(req, res) {
     var pj;
     account_dao.getUserByReq(req)
-    .then(u=>{
-         return project_dao.getProjectById(req.id)
-        .then(p=>{
-            if(!p)
-                throw new Error('project not found');
-            pj  = p;
-            return p.getTeam();
+        .then(u => {
+            return project_dao.getProjectById(req.id)
+                .then(p => {
+                    if (!p)
+                        throw new Error('project not found');
+
+                    if (p.isPrivate)
+                        return getPrivateProjectTask(u, p, req.params.state);
+
+                    return getTeamProjectTask(u, p, req.params.state);
+                })
+                .then(ts => {
+                     var tbody = bodymaker.makeTaskInfoArray(ts);
+                      res.send(JSON.stringify(bodymaker.makeBodyOn(0,'','tasks',tbody)));
+                })
         })
-        .then(t=>{
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        });
+}
+
+
+//获取私人项目的任务，验证用户是否来自团队
+function getTeamProjectTask(user, project, state) 
+{
+    return new Promise(function (res, ref) {
+        res();
+    })
+        .then(() => {
+            return project.getTeam();
+        })
+        .then(t => {
             return t.hasMember(u.id)
         })
-        .then(has=>{
-            if(has)
-            {
-                //todo
-            }
-
+        .then(has => {
+            if (has) {
+                state = state || 'all';
+                if (state != 'all' || state != 'finished' || state != 'finished')
+                    return Promise.reject('error state');
+                return project_dao.getProjectTask(project, state);
+            }else
+                return Promise.reject('you are not member in project');
         })
-    })
-    .catch(err=>{
-        res.send(bodymaker.makeJson(1,err.message));
-    });
-
-
-   
-
 }
-module.exports = { createProject,
-     deleteProject ,
-     getProjectList,
-     getProjectInfo,
-     getProjectTask
-    }
+
+//获取私人项目的任务，不用验证权限
+function getPrivateProjectTask(user, project, state) {
+    return new Promise(function (res, ref) {
+        res();
+    })
+        .then(() => {
+            state = state || 'all';
+            if (state != 'all' || state != 'finished' || state != 'finished')
+                return Promise.reject('error state');
+            return project_dao.getProjectTask(project, state);
+        })
+}
+
+module.exports = {
+    createProject,
+    deleteProject,
+    getProjectList,
+    getProjectInfo,
+    getProjectTask
+}

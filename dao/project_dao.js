@@ -126,8 +126,15 @@ function getProjectById(id) {
     });
 }
 
-function getProjectTask(pid, state) {
-
+function getProjectTask(project, state) {
+       var where = {
+        ProjectId:project.id
+    }
+    if(state=='finished')
+      where.finish = 1;
+    else if(state=='unfinish')
+      where.finish = 0;
+    return MyModel.Task.findAll({where:where});
 }
 
 module.exports = {

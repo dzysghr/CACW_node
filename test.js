@@ -4,7 +4,9 @@ var p3 = new Promise((resolve, reject) => {
 }); 
 
 
-p3
+new Promise(function (res, ref) {
+        res();
+    })
 .then(()=>{
   console.log(1);
 }).then(()=>{

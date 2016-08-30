@@ -65,15 +65,13 @@ function deleteProject(req, res) {
                     return [p.getTeam(), p];
                 })
                 .spread((t, p) => {
-                    
-                    if(p.isPrivate)
-                    {
-                        if(p.AdminId==u.id)
+                    if (p.isPrivate) {
+                        if (p.AdminId == u.id)
                             return p.destroy();
                         else
                             throw new Error('you are not admin of the project');
                     }
-                    if (t==undefined||t.AdminId != u.id)
+                    if (t == undefined || t.AdminId != u.id)
                         throw new Error('you are not admin of the team');
                     return p.destroy();
                 })
@@ -87,23 +85,23 @@ function deleteProject(req, res) {
 }
 
 function getProjectList(req, res) {
-    account_dao.getUserByReq(req)
+    return account_dao.getUserByReq(req)
         .then(u => {
             var state;
             var type;
             type = req.query.type || 'all';
-            if (type != 'private' && type !='all'&&type!='team')
-                throw new Error('error params :'+type);
+            if (type != 'private' && type != 'all' && type != 'team')
+                throw new Error('error params :' + req.query.type);
 
             state = req.query.state || 'unfile';
 
             if (state != 'all' && state != 'unfile' && state != 'file')
-                throw new Error('error state ' + type);
+                throw new Error('error state ' + req.query.state);
 
             if (type == 'private')
                 return project_dao.getPrivateProject(u, state);
             else
-                return project_dao.getAllProjects(u, state,type);
+                return project_dao.getAllProjects(u, state, type);
         })
         .then(projects => {
             var pbody = bodymaker.makeProjectArray(projects);
@@ -148,8 +146,8 @@ function getProjectTask(req, res) {
                     return getTeamProjectTask(u, p, req.query.state);
                 })
                 .then(ts => {
-                     var tbody = bodymaker.makeTaskInfoArray(ts);
-                      res.send(JSON.stringify(bodymaker.makeBodyOn(0,'','tasks',tbody)));
+                    var tbody = bodymaker.makeTaskInfoArray(ts);
+                    res.send(JSON.stringify(bodymaker.makeBodyOn(0, '', 'tasks', tbody)));
                 })
         })
         .catch(err => {
@@ -159,8 +157,7 @@ function getProjectTask(req, res) {
 
 
 //获取私人项目的任务，验证用户是否来自团队
-function getTeamProjectTask(user, project, state) 
-{
+function getTeamProjectTask(user, project, state) {
     return new Promise(function (res, ref) {
         res();
     })
@@ -176,7 +173,7 @@ function getTeamProjectTask(user, project, state)
                 if (state != 'all' && state != 'finished' && state != 'finished')
                     return Promise.reject('error state');
                 return project_dao.getProjectTask(project, state);
-            }else
+            } else
                 return new Error('you are not member in project');
         })
 }
@@ -194,10 +191,48 @@ function getPrivateProjectTask(user, project, state) {
         })
 }
 
+function fileProject(req, res) {
+    return account_dao.getUserByReq(req)
+        .then(u => {
+            return project_dao.getProjectById(req.params.id)
+                .then(p => {
+                    if (!p)
+                        throw new Eror('project not found');
+                    if(p.isPrivate)
+                        return project_dao.fileProject(p);
+                    else 
+                        return fileTeamProject(p,u.id);
+                })
+                .then(()=>{
+                    res.send(bodymaker.makeJson(0,''));
+                })
+        })
+        .catch(err=>{
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
+function fileTeamProject(project,uid)
+{
+    return project.getTeam()
+    .then(t=>{
+        if(!t)
+            throw new Error('team of project not found');
+        if(t.adminId!=uid)
+            throw new Error('you are not admin');
+        
+        return project_dao.fileProject(p);
+    })
+}
+
+
+
+
 module.exports = {
     createProject,
     deleteProject,
     getProjectList,
     getProjectInfo,
-    getProjectTask
+    getProjectTask,
+    fileProject
 }

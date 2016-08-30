@@ -38,10 +38,14 @@ router.get('/:id', function (req, res) {
 });
 
 
-
 //获取项目任务
 router.get('/:id/tasklist', function (req, res) {
    project_bll.getProjectTask(req,res);
+});
+
+//项目归档
+router.get('/:id/file', function (req, res) {
+   project_bll.fileProject(req,res);
 });
 
 

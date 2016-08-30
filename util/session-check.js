@@ -11,7 +11,7 @@ function checker(option) {
             res.send(bodymaker.makeJson(3, 'can not find sessionId in header'));
             return;
         }
-        MyModel.Session.findOne({
+       return  MyModel.Session.findOne({
             where: {
                 Session: s
             },

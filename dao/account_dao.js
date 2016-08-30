@@ -78,9 +78,7 @@ function getUser(session) {
     {
         if(s)
             return s.getUser();
-        else
-            return; 
-    })
+    });
 }
 
 //删除session

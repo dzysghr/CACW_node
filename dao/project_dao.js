@@ -143,6 +143,20 @@ function getProjectTask(project, state) {
     });
 }
 
+function fileProject(project)
+{
+     return project.update({
+         file:1
+     })
+     .then(()=>{
+            MyModel.Task.update({finish:1},{
+                where:{
+                    projectId:project.id
+                }
+            })
+     })
+}
+
 module.exports = {
     createProject,
     createPrivateProject,
@@ -152,5 +166,6 @@ module.exports = {
     getProjectById,
     getProjectByTeamArray,
     getProjectTask,
-    getPrivateProject
+    getPrivateProject,
+    fileProject
 }

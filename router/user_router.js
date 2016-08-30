@@ -19,7 +19,7 @@ router.use(bodyParser.json());
 
 //获取个人头像
 // router.get('/avatar', function (req, res) {
-  
+
 // });
 
 //搜索信息
@@ -29,7 +29,7 @@ router.get('/search', function (req, res) {
 
 //修改头像
 router.post('/upload', function (req, res) {
-    user_bll.setUserAvator(req,res);
+  user_bll.setUserAvator(req, res);
 });
 
 //修改个人信息

@@ -65,8 +65,15 @@ function deleteProject(req, res) {
                     return [p.getTeam(), p];
                 })
                 .spread((t, p) => {
-
-                    if (t.AdminId != u.id)
+                    
+                    if(p.isPrivate)
+                    {
+                        if(p.AdminId==u.id)
+                            return p.destroy();
+                        else
+                            throw new Error('you are not admin of the project');
+                    }
+                    if (t==undefined||t.AdminId != u.id)
                         throw new Error('you are not admin of the team');
                     return p.destroy();
                 })
@@ -172,7 +179,7 @@ function getTeamProjectTask(user, project, state)
                     return Promise.reject('error state');
                 return project_dao.getProjectTask(project, state);
             }else
-                return Promise.reject('you are not member in project');
+                return new Error('you are not member in project');
         })
 }
 
@@ -184,7 +191,7 @@ function getPrivateProjectTask(user, project, state) {
         .then(() => {
             state = state || 'all';
             if (state != 'all' || state != 'finished' || state != 'finished')
-                return Promise.reject('error state');
+                return new Error('error state');
             return project_dao.getProjectTask(project, state);
         })
 }

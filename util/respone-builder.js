@@ -108,15 +108,16 @@ function makeTeamInfo(team, all) {
 
 function makeProject(proj) {
     var p={
-        id:proj.pid,
-        name:proj.pname,
-        team:{
-            id:proj.team.id,
-            name:proj.team.teamName
-        },
+        id:proj.id,
+        name:proj.name,
         isPrivate:proj.isPrivate,
         file:proj.file
     }
+    if(proj.team)
+     p.team = {
+            id:proj.team.id,
+            name:proj.team.teamName
+        }
     return p
 }
 

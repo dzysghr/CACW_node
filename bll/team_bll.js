@@ -26,6 +26,8 @@ function createTeam(req, res) {
             form.keepExtensions = true;	 //保留后缀
             form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小
             form.parse(req, function (err, fields, files) {
+                console.log(fields);
+
                 if (err) {
                     res.send(JSON.stringify(bodymaker.makeBody(0, 'fail to upload image :' + err)));
                     return;
@@ -49,7 +51,6 @@ function createTeam(req, res) {
                         extName = '.png';
                         break;
                 }
-
                 var newPath = form.uploadDir + '/team_' + t.id + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
                 res.send(JSON.stringify(bodymaker.makeBody(0, '')));
@@ -103,7 +104,8 @@ function getTeamMemer(req, res) {
 function setTeamInfo(req, res) {
     var id = req.params.id;
     var session = req.cookies['sessionId'];
-    account_dao.getUser(session).then(u => {
+    account_dao.getUser(session)
+    .then(u => {
         return team_dao.getTeamByid(id)
             .then(t => {
                 if (t == undefined) {

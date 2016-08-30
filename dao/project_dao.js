@@ -69,12 +69,10 @@ function getPrivateProject(user, state) {
         where.file = 0;
 
     return MyModel.Project.findAll({
-        where: where,
-        include: [{
-            model: MyModel.Team
-        }]
+        where: where
     })
 }
+
 
 
 /**
@@ -83,7 +81,7 @@ function getPrivateProject(user, state) {
  * @param {any} state file unfile all
  * @returns
  */
-function getAllProjects(user, state) {
+function getAllProjects(user,state,type) {
     //找出所有的团队
     return user.getTeam().then(teams => {
         //取团队id
@@ -94,7 +92,6 @@ function getAllProjects(user, state) {
         return list;
     }).then(list => {
         //找出项目所属团队在id列表中
-
         var where = {
             $or:
             [
@@ -106,6 +103,8 @@ function getAllProjects(user, state) {
             where.file = 1;
         else if (state == undefined || state == 'unfile')
             where.file = 0;
+        if(type=='team')
+            where.isPrivate=0;
 
         return MyModel.Project.findAll({
             where: where,

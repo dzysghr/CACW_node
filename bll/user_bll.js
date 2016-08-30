@@ -114,7 +114,6 @@ function searchUser(req, res) {
         res.send(bodymaker.makeJson(1, 'query params not found ,you should set url params like /search?id=xxx'))
         return
     }
-
     user_dao.queryUser(p)
     .then(us=>{
         if(us==undefined)

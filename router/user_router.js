@@ -34,6 +34,7 @@ router.post('/upload', function (req, res) {
 
 //修改个人信息
 router.post('/', function (req, res) {
+  console.log('修改个人信息');
   user_bll.setUserInfo(req, res);
 });
 

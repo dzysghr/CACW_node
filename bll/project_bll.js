@@ -89,22 +89,21 @@ function deleteProject(req, res) {
 function getProjectList(req, res) {
     account_dao.getUserByReq(req)
         .then(u => {
-
             var state;
             var type;
-            type = req.params.type || 'all';
-            if (type != 'private' || type != 'all')
-                throw new Error('error type');
+            type = req.query.type || 'all';
+            if (type != 'private' && type !='all'&&type!='team')
+                throw new Error('error params :'+type);
 
-            state = req.params.state || 'unfile';
+            state = req.query.state || 'unfile';
 
-            if (state != 'all' || state != 'unfile' || state != 'file')
+            if (state != 'all' && state != 'unfile' && state != 'file')
                 throw new Error('error state ' + type);
 
             if (type == 'private')
                 return project_dao.getPrivateProject(u, state);
             else
-                return project_dao.getAllProjects(u, state);
+                return project_dao.getAllProjects(u, state,type);
         })
         .then(projects => {
             var pbody = bodymaker.makeProjectArray(projects);
@@ -175,7 +174,7 @@ function getTeamProjectTask(user, project, state)
         .then(has => {
             if (has) {
                 state = state || 'all';
-                if (state != 'all' || state != 'finished' || state != 'finished')
+                if (state != 'all' && state != 'finished' && state != 'finished')
                     return Promise.reject('error state');
                 return project_dao.getProjectTask(project, state);
             }else
@@ -190,7 +189,7 @@ function getPrivateProjectTask(user, project, state) {
     })
         .then(() => {
             state = state || 'all';
-            if (state != 'all' || state != 'finished' || state != 'finished')
+            if (state != 'all' && state != 'finished' && state != 'finished')
                 return new Error('error state');
             return project_dao.getProjectTask(project, state);
         })

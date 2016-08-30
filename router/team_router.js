@@ -72,4 +72,9 @@ router.delete('/:teamid', function (req, res) {
 });
 
 
+//获取团队项目列表
+router.get('/:teamid/projectlist', function (req, res) {
+    team_bll.getTeamPoject(req,res);
+});
+
 module.exports = router;

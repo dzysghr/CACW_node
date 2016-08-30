@@ -105,27 +105,27 @@ function setTeamInfo(req, res) {
     var id = req.params.id;
     var session = req.cookies['sessionId'];
     account_dao.getUser(session)
-    .then(u => {
-        return team_dao.getTeamByid(id)
-            .then(t => {
-                if (t == undefined) {
-                    res.send(bodymaker.makeJson(5, 'team not found'));
-                    return;
-                }
-                if (t.AdminId != u.id) {
-                    res.send(bodymaker.makeJson(4, 'you are not admin'));
-                    return;
-                }
-                var body = req.body;
-                return team_dao.setTeamInfo(t, body)
-                    .then(() => {
-                        res.send(bodymaker.makeJson(0, ''));
-                    }).catch(err => {
-                        res.send(bodymaker.makeJson(1, err));
-                    })
-            })
+        .then(u => {
+            return team_dao.getTeamByid(id)
+                .then(t => {
+                    if (t == undefined) {
+                        res.send(bodymaker.makeJson(5, 'team not found'));
+                        return;
+                    }
+                    if (t.AdminId != u.id) {
+                        res.send(bodymaker.makeJson(4, 'you are not admin'));
+                        return;
+                    }
+                    var body = req.body;
+                    return team_dao.setTeamInfo(t, body)
+                        .then(() => {
+                            res.send(bodymaker.makeJson(0, ''));
+                        }).catch(err => {
+                            res.send(bodymaker.makeJson(1, err));
+                        })
+                })
 
-    })
+        })
 }
 
 
@@ -243,19 +243,19 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
                     return account_dao.getDeviceIds([reciever]);
                 })
                 .then(ids => {
-                   if (ids.length > 0) {
+                    if (ids.length > 0) {
                         var content;
                         if (reciever == memberid)
-                           content  = bodymaker.makePushContentJson('nm','','你已经被移出团队 '+team.teamName);
+                            content = bodymaker.makePushContentJson('nm', '', '你已经被移出团队 ' + team.teamName);
                         else
-                            content  = bodymaker.makePushContentJson('nm','','团队成员 '+u.nickName+'已经退出团队 '+team.teamName);
+                            content = bodymaker.makePushContentJson('nm', '', '团队成员 ' + u.nickName + '已经退出团队 ' + team.teamName);
                         client.pushToDevices(ids, '团队消息', content);
 
-                        console.log('推送成员删除消息 '+content);
+                        console.log('推送成员删除消息 ' + content);
                     }
                 })
-                .then(()=>{},err=>{
-                    console.log('推送成员删除消息失败 '+err.message);
+                .then(() => { }, err => {
+                    console.log('推送成员删除消息失败 ' + err.message);
                 })
         }).catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -390,11 +390,42 @@ function searchTeam(req, res) {
         })
 }
 
+function getTeamPoject(req, res) {
+    var team;
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return team_dao.getTeamByid(req.params.teamid)
+                .then(t => {
+                    if (!t)
+                        throw new Error('team not found');
+                    team = t;
+                    return t.hasMember(u.id);
+                })
+                .then(has => {
+                    if (!has)
+                        throw new Error('you are not the member of team');
+                    var state = req.query.state || 'all';
+                    if (state != 'all' && state != 'file' && state != 'unfile')
+                        throw new Error('error params state')
+
+                    return team_dao.getTeamProject(team, state);
+                })
+                .then(projects => {
+                    var pbody = bodymaker.makeProjectArray(projects);
+                    var body = bodymaker.makeBodyOn(0, '', 'projects', pbody);
+                    res.send(JSON.stringify(body));
+                })
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
+}
+
 module.exports = {
     createTeam,
     setTeamInfo, getTeamInfo,
     getTeamMemer, getTeamList,
     deleteMember, leaveTeam,
     dissolveTeam, setTeamAvatar,
-    searchTeam
+    searchTeam,getTeamPoject
 }

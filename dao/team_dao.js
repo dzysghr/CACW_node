@@ -110,8 +110,32 @@ function queryTeam(params) {
     return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }
 
+function getTeamProject(team,state) {
 
-module.exports = { queryTeam, getTeamList, setTeamInfo, addTeamMember, removeTeamMember, getTeamByid, getTeamMembers, createTeam }
+    var where = {
+        teamId:team.id
+    }
+
+    if(state=='file')
+        where.file =1;
+    else if(state=='unfile')
+        where.file = 0;
+
+    return MyModel.Project.findAll({where:where})
+}
+
+
+module.exports = { 
+    queryTeam, 
+    getTeamList, 
+    setTeamInfo, 
+    addTeamMember,
+    removeTeamMember, 
+    getTeamByid,
+    getTeamMembers,
+    createTeam ,
+    getTeamProject
+}
 
 
 //获取成员数量

@@ -11,11 +11,11 @@ function createProject(team, projectname) {
     })
 }
 
-function createPrivateProject(user,projectname) {
+function createPrivateProject(user, projectname) {
     return MyModel.Project.create({
         name: projectname,
-        isPrivate:1,
-        AdminId:user.id
+        isPrivate: 1,
+        AdminId: user.id
     });
 }
 
@@ -32,15 +32,15 @@ function getProjectByTeam(team) {
 //获取团队项目列表
 function getProjectByTeamArray(teams) {
 
-    var list  = [];
+    var list = [];
     for (var i = 0; i < teams.length; i++) {
-         list[i] =  teams[i].id;
+        list[i] = teams[i].id;
     }
 
     return MyModel.Project.findAll({
         where: {
-            teamId:{
-                $in:list
+            teamId: {
+                $in: list
             }
         }
     })
@@ -58,8 +58,32 @@ function getTeamProjectCount(team) {
 }
 
 
-//获取用户项目列表
-function getProjectsByUser(user) {
+function getPrivateProject(user, state) {
+
+    var where = {
+        AdminId:user.id
+    };
+    if (state == 'file')
+        where.file = 1;
+    else if (state == undefined || state == 'unfile')
+        where.file = 0;
+
+    return MyModel.Project.findAll({
+        where: where,
+        include: [{
+            model: MyModel.Team
+        }]
+    })
+}
+
+
+/**
+ * 获取用户项目列表,包括私人和团队
+ * @param {any} user 用户
+ * @param {any} state file unfile all
+ * @returns
+ */
+function getAllProjects(user, state) {
     //找出所有的团队
     return user.getTeam().then(teams => {
         //取团队id
@@ -70,42 +94,50 @@ function getProjectsByUser(user) {
         return list;
     }).then(list => {
         //找出项目所属团队在id列表中
+
+        var where = {
+            $or:
+            [
+                { teamId: { $in: list } },
+                { AdminId: user.id }
+            ]
+        };
+        if (state == 'file')
+            where.file = 1;
+        else if (state == undefined || state == 'unfile')
+            where.file = 0;
+
         return MyModel.Project.findAll({
-            where: {
-                $or:
-                [
-                    {teamId: {$in:list}},
-                    {AdminId : user.id}
-                ]
-            },
-            include:[{
-                model:MyModel.Team
+            where: where,
+            include: [{
+                model: MyModel.Team
             }]
         })
     })
 }
 
 function getProjectById(id) {
-    return MyModel.Project.findOne({ 
+    return MyModel.Project.findOne({
         where: { id: id },
-        include:[{
-            model:MyModel.Team
+        include: [{
+            model: MyModel.Team
         }]
-    
-});
+
+    });
 }
 
-function getProjectTask(pid,state)
-{
+function getProjectTask(pid, state) {
+
 }
 
-module.exports ={
+module.exports = {
     createProject,
     createPrivateProject,
     getProjectByTeam,
     getTeamProjectCount,
-    getProjectsByUser,
+    getAllProjects,
     getProjectById,
     getProjectByTeamArray,
-    getProjectTask
+    getProjectTask,
+    getPrivateProject
 }

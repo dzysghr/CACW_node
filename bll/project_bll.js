@@ -30,7 +30,6 @@ function createPriveteProject(req,res)
         })
 }
 
-
 function createTeamProject(req, res) {
     account_dao.getUserByReq(req)
         .then(u => {
@@ -39,7 +38,6 @@ function createTeamProject(req, res) {
             if (teamid == undefined || pname == undefined)
                 throw new Error('post params not found');
             return [team_dao.getTeamByid(teamid), u];
-
         })
         .spread((t, u) => {
             if (t == undefined)
@@ -84,10 +82,31 @@ function deleteProject(req, res) {
 }
 
 function getProjectList(req, res) {
-
     account_dao.getUserByReq(req)
         .then(u => {
-            return project_dao.getProjectsByUser(u);
+
+            var state;
+            var file;
+            if(req.params.state==undefined||req.params.state=='all')
+                state = 'all';
+            else if(req.params.type=='private')
+                state='private';
+            else 
+                throw new Error('error type');
+            
+            if(req.params.state==undefined||req.params.state=='unfile')
+                file = 'unfile';
+            else if(req.params.state=='all')
+                file = 'all';
+            else if(req.params.state=='file')
+                file = 'file';
+            else 
+                throw new Error('error state');
+            
+            if(state=='private')
+                return project_dao.getPrivateProject(u,state);
+            else
+                return project_dao.getAllProjects(u,state);
         })
         .then(projects=>{
             
@@ -109,7 +128,8 @@ function getProjectInfo(req,res)
     .then(p=>{
         if(p==undefined)
             throw new Error('project not found');
-
+        
+        
         var pbody = bodymaker.makeProject(p);
         var body = bodymaker.makeBodyOn(0,'','project',pbody);
         res.send(JSON.stringify(body));
@@ -120,17 +140,15 @@ function getProjectInfo(req,res)
 }
 
 function getProjectTask(req,res) {
-    
     var pj;
     account_dao.getUserByReq(req)
     .then(u=>{
-
          return project_dao.getProjectById(req.id)
         .then(p=>{
             if(!p)
                 throw new Error('project not found');
             pj  = p;
-            return p.getTeam()
+            return p.getTeam();
         })
         .then(t=>{
             return t.hasMember(u.id)
@@ -142,7 +160,9 @@ function getProjectTask(req,res) {
             }
 
         })
-
+    })
+    .catch(err=>{
+        res.send(bodymaker.makeJson(1,err.message));
     });
 
 

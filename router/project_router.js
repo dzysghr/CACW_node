@@ -40,8 +40,8 @@ router.get('/:id', function (req, res) {
 
 
 //获取项目任务
-router.post('/:id/tasks', function (req, res) {
-   project_bll.getProjectTask(req.res);
+router.get('/:id/tasklist', function (req, res) {
+   project_bll.getProjectTask(req,res);
 });
 
 

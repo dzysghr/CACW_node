@@ -136,17 +136,16 @@ function getProjectInfo(req, res) {
 
 function getProjectTask(req, res) {
     var pj;
-    account_dao.getUserByReq(req)
+    return account_dao.getUserByReq(req)
         .then(u => {
-            return project_dao.getProjectById(req.id)
+            return project_dao.getProjectById(req.params.id)
                 .then(p => {
                     if (!p)
                         throw new Error('project not found');
-
                     if (p.isPrivate)
-                        return getPrivateProjectTask(u, p, req.params.state);
+                        return getPrivateProjectTask(u, p, req.query.state);
 
-                    return getTeamProjectTask(u, p, req.params.state);
+                    return getTeamProjectTask(u, p, req.query.state);
                 })
                 .then(ts => {
                      var tbody = bodymaker.makeTaskInfoArray(ts);
@@ -189,7 +188,7 @@ function getPrivateProjectTask(user, project, state) {
     })
         .then(() => {
             state = state || 'all';
-            if (state != 'all' && state != 'finished' && state != 'finished')
+            if (state != 'all' && state != 'unfinish' && state != 'finished')
                 return new Error('error state');
             return project_dao.getProjectTask(project, state);
         })

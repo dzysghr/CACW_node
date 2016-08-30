@@ -133,7 +133,14 @@ function getProjectTask(project, state) {
       where.finish = 1;
     else if(state=='unfinish')
       where.finish = 0;
-    return MyModel.Task.findAll({where:where});
+    return MyModel.Task.findAll({
+        where:where,
+        include:[
+            {
+                model: MyModel.Project
+            }
+        ]
+    });
 }
 
 module.exports = {

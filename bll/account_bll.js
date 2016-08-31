@@ -55,7 +55,7 @@ function onRegister(req, res) {
     var username = req.body.username;
     var psw = req.body.psw;
     if (username == undefined || psw == undefined) {
-        var body = bodymaker.makeBody(7, 'can not parse username or password,please check (Content-Type:application/x-www-form-urlencoded) in your header');
+        var body = bodymaker.makeBody(7, 'can not parse username or password,please check (Content-Type:application/json) in your header');
         res.send(JSON.stringify(body));
         return;
     }

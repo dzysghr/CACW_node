@@ -200,7 +200,7 @@ function getTaskList(req, res) {
         })
         .then(tasks => {
             var tbody = bodymaker.makeTaskInfoArray(tasks)
-            var body = bodymaker.makeBodyOn(0, '', 'tasks', tbody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', tbody);
             res.send(JSON.stringify(body));
         })
         .catch(err => {

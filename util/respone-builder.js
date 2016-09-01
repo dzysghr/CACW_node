@@ -146,7 +146,6 @@ function makeTaskInfo(task) {
             name:task.project.name
         }
     }
-    console.log(task.startDate.toLocaleString());
     return t;
 }
 

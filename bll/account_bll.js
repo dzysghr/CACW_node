@@ -21,14 +21,13 @@ function onLogin(req, res) {
             return account_dao.saveSession(u, s,deviceId);
         }).then(s => {
             res.cookie('sessionId', s.Session);
-            var body = bodymaker.makeBody(0, '');
+            var body = bodymaker.makeBodyOn(0,'','data',s.Session);
             res.send(JSON.stringify(body));
         }).catch(err => {
             var body = bodymaker.makeBody(1, err);
             res.send(JSON.stringify(body));
         })
 }
-
 
 
 function onLogout(req, res) {

@@ -8,7 +8,7 @@ var client = require('../util/push');
 
 function createTeam(req, res) {
     var teamname = req.params.teamname;
- 
+
     account_dao.getUserByReq(req).then(u => {
         return team_dao.createTeam(u, teamname)
     })
@@ -130,23 +130,26 @@ function setTeamInfo(req, res) {
 
 function getTeamInfo(req, res) {
     var id = req.params.id;
-    team_dao.getTeamByid(id).then(t => {
-        if (t == undefined) {
-            res.send(bodymaker.makeJson(5, 'team not found'));
-            return;
-        }
-        var teambody = bodymaker.makeTeamInfo(t,true);
-        var body = bodymaker.makeBodyOn(0, '', 'data', teambody);
-        res.send(JSON.stringify(body));
-        //检查是否需要返回成员
-        // var count = req.query.withMember;
-        // if (count == undefined || count <= 0) {
-        //     var body = bodymaker.makeBodyOn(0, '', 'team', teambody);
-        //     res.send(JSON.stringify(body));
-        //     return;
-        // }
-        // return body;
-    })
+    var team;
+    var teambody; 
+    team_dao.getTeamByid(id)
+        .then(t => {
+            if (!t) {
+                throw new Error('team not found')
+            }
+            team=t;
+            teambody = bodymaker.makeTeamInfo(t, true);
+            return t.countProjects();
+        })
+        .then(c => {
+            teambody.projectCount = c;
+            return team.countMember()
+        })
+        .then(ms=>{
+            teambody.memberCount = ms;
+            var body = bodymaker.makeBodyOn(0, '', 'data', teambody);
+            res.send(JSON.stringify(body));
+        })
         .catch(err => {
             res.send(JSON.stringify(bodymaker.makeJson(1, err)));
         })
@@ -425,5 +428,5 @@ module.exports = {
     getTeamMemer, getTeamList,
     deleteMember, leaveTeam,
     dissolveTeam, setTeamAvatar,
-    searchTeam,getTeamPoject
+    searchTeam, getTeamPoject
 }

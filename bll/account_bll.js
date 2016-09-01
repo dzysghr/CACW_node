@@ -11,16 +11,19 @@ function onLogin(req, res) {
         res.send(bodymaker.makeJson(7, 'please check your params ,and set (Content-Type:application/json) in your header'));
         return;
     }
+    var user;
     account_dao.login(username, psw)
         .then(u => {
-            if (u == false) {
+            if (!u) {
                 throw new Error('wrong username or password');
             }
+            user = u;
             var s = util.MD5(u.username + new Date().getMilliseconds());
             return account_dao.saveSession(u, s,deviceId);
         }).then(s => {
             res.cookie('sessionId', s.Session);
-            var body = bodymaker.makeBodyOn(0,'','data',s.Session);
+            res.cookie('uid',user.id);
+            var body = bodymaker.makeBodyOn(0,'','data',user.nickName);
             res.send(JSON.stringify(body));
         }).catch(err => {
             var body = bodymaker.makeBody(1, err.message);

@@ -21,14 +21,16 @@ function createTeam(user, teamname) {
 
 //获取团队成员
 function getTeamMembers(teamid, limit, offset) {
-    limit = limit&&limit>0? limit:100;
-    offset = offset&&offset>0? offset: 0;
+
+    offset = offset>0? offset: 0;
+    limit = parseInt(limit);
 
     return MyModel.TeamMember.findAll({
         where: {
             teamId: teamid
         }
     }).then(tm => {
+        //拿到用户id
         var ids =new Array();
         for (var i = 0; i < tm.length; i++) {
             ids[i] = tm[i].userId;

@@ -90,7 +90,7 @@ function getTeamMemer(req, res) {
                     else if (req.query.allcolumn == 'true')
                         all = true;
                     var userlist = bodymaker.makeUserInfoArray(us, all);
-                    var body = bodymaker.makeBodyOn(0, '', 'member', userlist);
+                    var body = bodymaker.makeBodyOn(0, '', 'data', userlist);
                     res.send(JSON.stringify(body));
                 })
                 .catch(err => {
@@ -135,8 +135,8 @@ function getTeamInfo(req, res) {
             res.send(bodymaker.makeJson(5, 'team not found'));
             return;
         }
-        var teambody = bodymaker.makeTeamInfo(t);
-        var body = bodymaker.makeBodyOn(0, '', 'team', teambody);
+        var teambody = bodymaker.makeTeamInfo(t,true);
+        var body = bodymaker.makeBodyOn(0, '', 'data', teambody);
         res.send(JSON.stringify(body));
         //检查是否需要返回成员
         // var count = req.query.withMember;
@@ -167,7 +167,7 @@ function getTeamList(req, res) {
             else all = false;
 
             var teambody = bodymaker.makeTeamInfoArray(tlist, all);
-            var body = bodymaker.makeBodyOn(0, '', 'teams', teambody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', teambody);
             res.send(JSON.stringify(body));
         }).catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -184,7 +184,6 @@ function getTeamList(req, res) {
  * @param {any} isOut 当为true时表示自己退出团队，false时表示踢掉别人
  */
 function deleteMemberFromTeam(req, res, memberid, isOut) {
-
     var session = req.cookies['sessionId'];
     var teamid = req.params.teamid;
     var reciever = memberid; ////删除后通知被删除的人

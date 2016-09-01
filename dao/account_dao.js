@@ -96,6 +96,7 @@ function register(username,psw) {
         {
             username:username,
             psw : psw,
+            nickName:"蚂蚁"
         }
     );
 }

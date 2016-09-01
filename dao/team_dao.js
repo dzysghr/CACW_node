@@ -15,13 +15,7 @@ function createTeam(user, teamname) {
             AdminId: user.id
         }
     ).then(t => {
-        return MyModel.User.findOne()
-            .then(u => {
-                return t.addMember(u)
-                    .then(() => {
-                        return t;
-                    });
-            })
+        return t.addMember(user);
     });
 }
 

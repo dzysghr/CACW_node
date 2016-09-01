@@ -2,7 +2,6 @@ var account_dao = require('../dao/account_dao');
 var util = require('../util/md5');
 var bodymaker = require('../util/respone-builder');
 var Sequelize = require('sequelize');
-
 function onLogin(req, res) {
 
     var username = req.body.username;
@@ -24,7 +23,7 @@ function onLogin(req, res) {
             var body = bodymaker.makeBodyOn(0,'','data',s.Session);
             res.send(JSON.stringify(body));
         }).catch(err => {
-            var body = bodymaker.makeBody(1, err);
+            var body = bodymaker.makeBody(1, err.message);
             res.send(JSON.stringify(body));
         })
 }

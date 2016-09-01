@@ -8,9 +8,8 @@ var client = require('../util/push');
 
 function createTeam(req, res) {
     var teamname = req.params.teamname;
-    var s = req.cookies['sessionId'];
-
-    account_dao.getUser(s).then(u => {
+ 
+    account_dao.getUserByReq(req).then(u => {
         return team_dao.createTeam(u, teamname)
     })
         .then((t) => {
@@ -36,7 +35,7 @@ function createTeam(req, res) {
                     res.send(JSON.stringify(bodymaker.makeBody(0, 'file not found,"img" key is expected')));
                     return;
                 }
-                var extName = '';  //后缀名
+                var extName = '.jpg';  //后缀名
                 switch (files['img'].type) {
                     case 'image/pjpeg':
                         extName = '.jpg';

@@ -5,5 +5,4 @@ function BaseError(code,msg)
     return e;
 }
 
-
 module.exports = BaseError

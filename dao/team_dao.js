@@ -22,9 +22,6 @@ function createTeam(user, teamname) {
 //获取团队成员
 function getTeamMembers(teamid, limit, offset) {
 
-    offset = offset>0? offset: 0;
-    limit = parseInt(limit);
-
     return MyModel.TeamMember.findAll({
         where: {
             teamId: teamid
@@ -34,16 +31,19 @@ function getTeamMembers(teamid, limit, offset) {
         var ids =new Array();
         for (var i = 0; i < tm.length; i++) {
             ids[i] = tm[i].userId;
-        }    
-        return MyModel.User.findAll(
-            {
+        }
+         var findarg =  {
                 where:
                 {
                     id: {$in: ids}
-                },
-                limit:limit,
-                offset:offset
-            })
+                }
+            }
+        if(limit>0)
+            findarg.limit = parseInt(limit);
+        if(offset>0)
+            findarg.offset = parseInt(offset);
+
+        return MyModel.User.findAll(findarg);
     })
 }
 

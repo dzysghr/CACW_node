@@ -70,6 +70,7 @@ function makeUserInfo(user, all) {
         var u = {
             id: user.id,
             username: user.username,
+            avatarUrl: user.avatarUrl,
             nickName: user.nickName
         }
     }

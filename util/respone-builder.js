@@ -95,7 +95,8 @@ function makeTeamInfo(team, all) {
             teamName: team.teamName,
             summary: team.summary,
             notice: team.notice,
-            AdminId: team.AdminId
+            AdminId: team.AdminId,
+            avatarUrl:team.avatarUrl
         }
     } else {
         var t = {

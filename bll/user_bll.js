@@ -49,7 +49,6 @@ function setUserAvator(req, res) {
     }
     account_dao.getUser(req.cookies['sessionId'])
         .then(u => {
-
             var form = new formidable.IncomingForm();
             form.uploadDir = +__dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑
@@ -64,24 +63,14 @@ function setUserAvator(req, res) {
                     res.send(bodymaker.makeErrorJson(7, 'file not found,"img" key is respected'));
                     return;
                 }
-                var extName = '';  //后缀名
-                switch (files['img'].type) {
-                    case 'image/pjpeg':
-                        extName = '.jpg';
-                        break;
-                    case 'image/jpeg':
-                        extName = '.jpg';
-                        break;
-                    case 'image/png':
-                        extName = '.png';
-                        break;
-                    case 'image/x-png':
-                        extName = '.png';
-                        break;
-                }
+                var extName = '.jpg';  //后缀名
+                var hash = util.MD5(new Date().getMilliseconds() + '');
 
-                var newPath = form.uploadDir + '/user_' + u.username + extName;
+                var newPath = form.uploadDir + '/user_' + u.id+'_'+hash+ extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
+                //删除旧头像
+                fs.unlinkSync(form.uploadDir + '/user' + t.id+'_'+t.avatarUrl+ extName)
+                user_dao.setUserInfo(u,{avatarUrl:hash});
                 res.send(bodymaker.makeBody(0, ''));
             })
         }).catch(err => {
@@ -115,16 +104,16 @@ function searchUser(req, res) {
         return
     }
     user_dao.queryUser(p)
-    .then(us=>{
-        if(us==undefined)
-            throw new Error('user not found');
-        var ubody = bodymaker.makeUserInfoArray(us,false);
-        var body = bodymaker.makeBodyOn(0,'','users',ubody);
-        res.send(JSON.stringify(body));
-    })
-    .catch(err=>{
-        res.send(bodymaker.makeJson(1,err.message));
-    })
+        .then(us => {
+            if (us == undefined)
+                throw new Error('user not found');
+            var ubody = bodymaker.makeUserInfoArray(us, false);
+            var body = bodymaker.makeBodyOn(0, '', 'users', ubody);
+            res.send(JSON.stringify(body));
+        })
+        .catch(err => {
+            res.send(bodymaker.makeJson(1, err.message));
+        })
 
 }
 

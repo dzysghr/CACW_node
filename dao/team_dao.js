@@ -76,6 +76,7 @@ function setTeamInfo(team, params) {
     team.summary = params.summary || team.summary;
     team.teamName = params.teamName || team.teamName;
     team.notice = params.notice || team.notice;
+    team.avatarUrl = params.avatarUrl || team.avatarUrl;
     return team.save();
 }
 

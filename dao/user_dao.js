@@ -31,6 +31,8 @@ function setUserInfo(user, params) {
     user.address = params.address == undefined ? user.address : params.address;
     user.shortNumber = params.shortNumber == undefined ? user.shortNumber : params.shortNumber;
     user.mobilePhone = params.mobilePhone == undefined ? user.mobilePhone : params.mobilePhone;
+    user.avatarUrl = params.avatarUrl == undefined ? user.avatarUrl : params.avatarUrl;
+    
     return user.save();
 }
 

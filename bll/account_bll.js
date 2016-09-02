@@ -18,7 +18,7 @@ function onLogin(req, res) {
                 throw new Error('wrong username or password');
             }
             user = u;
-            var s = util.MD5(u.username + new Date().getMilliseconds());
+            var s = util.MD5(u.username + new Date().getMilliseconds()+'');
             return account_dao.saveSession(u, s,deviceId);
         }).then(s => {
             res.cookie('sessionId', s.Session);

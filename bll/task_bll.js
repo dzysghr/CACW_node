@@ -14,66 +14,86 @@ function createTask(req, res) {
         res.send(bodymaker.makeJson(1, 'params error'));
         return;
     }
-
     account_dao.getUserByReq(req)
         .then(u => {
             return project_dao.getProjectById(body.projectId)
                 .then(p => {
                     if (p == undefined)
                         throw new Error('projectid not found');
-                    return [p.getTeam(), p];
-                })
-                .spread((t, p) => {
-
-                    //检查成员里是否有自己
-                    var f = false;
-                    for (var id in body.members) {
-                        if (id == u.id) {
-                            f = true;
-                            break;
-                        }
-                    }
-                    if (f)//有自己
-                        return t.hasMember(body.members);//检查所有成员是不是都在这个团队
-
-                    throw new Error('you are not in members');
-                })
-                .then(ismember => {
-                    if (!ismember)
-                        throw new Error('Some userid are not from the team of the project');
-                    return task_dao.createTask(req.body, u);
-                })
-                .then(t => {
-                    if (t == undefined)
-                        throw new Error('task create error');
-                    req.tid = t.id;
-                    return t.setMember(req.body.members, { finish: 1 });
-                })
-                .then(() => {
-                    res.send(bodymaker.makeJson(0, ''));
-
-                    //去掉自己
-                    var member = body.members;
-                    for (var i = 0; i < member.length; i++) {
-                        if (member[i] == u.id) {
-                            member.splice(i, 1);
-                            break;
-                        }
-                    }
-                    return account_dao.getDeviceIds(member);
-                })
-                .then(deviceids => {
-                    if (deviceids.length > 0) {
-                        var content = bodymaker.makePushContentJson('tk', req.tid, '你被加入新任务 ' + req.body.title);
-                        client.pushToDevices(deviceids, "新任务", content);
-                    }
-
+                    if (p.isPrivate)
+                        return createPrivateTask(u, req, res);
+                    else
+                        return createTeamTask(u, p, req, res);
                 })
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
         })
 }
+
+
+function createPrivateTask(user, req, res) {
+    var task;
+    return task_dao.createTask(req.body, user)
+        .then(t => {
+            task = t;
+            return t.setMember(user);
+        })
+        .then(() => {
+            var taskbody = bodymaker.makeTaskInfo(task);
+            res.json(bodymaker.makeBodyOn(0, '', 'data',taskbody));
+        })
+}
+
+function createTeamTask(user, project, req, res) {
+    var task;
+    project
+        .getTeam(t => {
+            //检查成员里是否有自己
+            var f = false;
+            for (var id in body.members) {
+                if (id == user.id) {
+                    f = true;
+                    break;
+                }
+            }
+            if (f)//有自己
+                return t.hasMember(body.members);//检查所有成员是不是都在这个团队
+            throw new Error('you are not in members');
+        })
+        .then(ismember => {
+            if (!ismember)
+                throw new Error('Some userid are not from the team of the project');
+            return task_dao.createTask(req.body, user);
+        })
+        .then(t => {
+            if (t == undefined)
+                throw new Error('task create error');
+            task = t;
+            return t.setMember(req.body.members);
+        })
+        .then(() => {
+
+            var taskbody = bodymaker.makeTaskInfo(task);
+            res.json(bodymaker.makeBodyOn(0, '', 'data', taskbody));
+            //去掉自己
+            var member = body.members;
+            for (var i = 0; i < member.length; i++) {
+                if (member[i] == user.id) {
+                    member.splice(i, 1);
+                    break;
+                }
+            }
+            return account_dao.getDeviceIds(member);
+        })
+        .then(deviceids => {
+            if (!deviceids && deviceids.length > 0) {
+                var content = bodymaker.makePushContentJson('tk', task.id, '你被加入新任务 ' + req.body.title);
+                client.pushToDevices(deviceids, "新任务", content);
+            }
+        })
+}
+
 
 
 function setTaskInfo(req, res) {
@@ -232,7 +252,7 @@ function getTaskMembers(req, res) {
         })
         .then(users => {
             var userbody = bodymaker.makeTaskMembers(users);
-            var body = bodymaker.makeBodyOn(0, '', 'members', userbody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', userbody);
             res.send(JSON.stringify(body));
         })
         .catch(err => {
@@ -247,7 +267,7 @@ function finishTask(req, res) {
                 .then(t => {
                     if (!t)
                         throw new Error('task not fount');
-                    if(t.AdminId!=u.id)
+                    if (t.AdminId != u.id)
                         throw new Error('you are not admin');
                     //todo 通知任务完成
                     return task_dao.setTaskFinish(t, u);
@@ -306,12 +326,14 @@ function deleteTask(req, res) {
 }
 
 
-module.exports = { deleteTask, 
+module.exports = {
+    deleteTask,
     finishTask,
-     getTaskMembers,
-      createTask, 
-      setTaskInfo, 
-      addTaskMember, 
-      removeTaskMember, 
-      getTaskList, 
-      getTask }
+    getTaskMembers,
+    createTask,
+    setTaskInfo,
+    addTaskMember,
+    removeTaskMember,
+    getTaskList,
+    getTask
+}

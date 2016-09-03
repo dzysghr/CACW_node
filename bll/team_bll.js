@@ -395,7 +395,7 @@ function getTeamPoject(req, res) {
                 })
                 .then(projects => {
                     var pbody = bodymaker.makeProjectArray(projects);
-                    var body = bodymaker.makeBodyOn(0, '', 'projects', pbody);
+                    var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
                     res.send(JSON.stringify(body));
                 })
         })

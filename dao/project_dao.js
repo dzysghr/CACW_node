@@ -5,10 +5,9 @@ var Sequelize = MyModel.sequelize;
 //创建项目，返回空
 function createProject(team, projectname) {
     return MyModel.Project.create({
-        name: projectname
-    }).then(p => {
-        return p.setTeam(team);
-    })
+        name: projectname,
+        teamId:team.id
+    });
 }
 
 function createPrivateProject(user, projectname) {

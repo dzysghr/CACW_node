@@ -46,8 +46,8 @@ function createTeamProject(req, res) {
 
             return project_dao.createProject(t, req.body.projectname);
         })
-        .then(() => {
-            res.send(bodymaker.makeJson(0, ''));
+        .then((p) => {
+            res.send(JSON.stringify(bodymaker.makeBodyOn(0, '','data',p.id)));
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -105,10 +105,9 @@ function getProjectList(req, res) {
         })
         .then(projects => {
             var pbody = bodymaker.makeProjectArray(projects);
-            var body = bodymaker.makeBodyOn(0, '', 'projects', pbody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
 
             res.send(JSON.stringify(body));
-
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));

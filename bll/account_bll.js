@@ -22,8 +22,7 @@ function onLogin(req, res) {
             return account_dao.saveSession(u, s,deviceId);
         }).then(s => {
             res.cookie('sessionId', s.Session);
-            res.cookie('uid',user.id);
-            var body = bodymaker.makeBodyOn(0,'','data',user.nickName);
+            var body = bodymaker.makeBodyOn(0,'','data',bodymaker.makeUserInfo(user,true));
             res.send(JSON.stringify(body));
         }).catch(err => {
             var body = bodymaker.makeBody(1, err.message);

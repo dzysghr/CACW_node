@@ -8,6 +8,13 @@ var project = require("./router/project_router")
 var task = require('./router/task_router')
 var message = require('./router/message_router')
 
+
+
+app.use(function(err, req, res, next) {
+   res.send("lalalala");
+   next();
+});
+
 app.use(cookieParser());
 app.use('/v1/images', express.static('image'));
 app.use('/v1/user', user);

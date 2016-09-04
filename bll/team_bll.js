@@ -39,8 +39,6 @@ function createTeam(req, res) {
                     return;
                 }
                 var extName = '.jpg';  //后缀名
-                
-
                 var newPath = form.uploadDir + '/team_' + t.id+'_'+hash+ extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
                 res.send(JSON.stringify(bodymaker.makeBody(0, '')));
@@ -72,9 +70,6 @@ function getTeamMemer(req, res) {
                     }
                 })
                 .then(us => {
-                    if (us == undefined) {
-                        throw new Error('no result from getTeamMembers,please check you limit or offset params');
-                    }
                     var all = false;
                     if (req.query.allcolumn == undefined)
                         all = false;

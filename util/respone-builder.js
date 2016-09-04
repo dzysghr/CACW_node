@@ -118,7 +118,7 @@ function makeProject(proj) {
     if(proj.team)
      p.team = {
             id:proj.team.id,
-            name:proj.team.teamName
+            teamName:proj.team.teamName
         }
     return p
 }

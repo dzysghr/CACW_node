@@ -325,6 +325,25 @@ function deleteTask(req, res) {
         })
 }
 
+//获取可邀请的用户
+// function getSelectableMember(req,res) {
+//     if(req.query.projectId==undefined)
+//     {   
+//         res.send(bodymaker.makeJson(1,'projectId was expected'));
+//         return;
+//     }
+
+//     account_dao.getUserByReq(req)
+//     .then(u=>{
+//         return project_dao.getProjectById(req.query.projectId)
+//         .then(p=>{
+//             if(!p)
+//                 throw new Error('project not found');
+
+
+//         })
+//     })
+// }
 
 module.exports = {
     deleteTask,
@@ -335,5 +354,6 @@ module.exports = {
     addTaskMember,
     removeTaskMember,
     getTaskList,
-    getTask
+    getTask,
+    // getSelectableMember
 }

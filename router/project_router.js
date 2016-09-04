@@ -48,5 +48,9 @@ router.get('/:id/file', function (req, res) {
    project_bll.fileProject(req,res);
 });
 
+//项目归档
+router.get('/:id/member', function (req, res) {
+   project_bll.fileProject(req,res);
+});
 
 module.exports = router;

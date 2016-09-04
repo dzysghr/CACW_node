@@ -114,16 +114,15 @@ function getProjectList(req, res) {
         })
 }
 
+//这里不检查项目与用户的关系
 function getProjectInfo(req, res) {
     var id = req.params.id;
     project_dao.getProjectById(id)
         .then(p => {
             if (p == undefined)
                 throw new Error('project not found');
-
-
             var pbody = bodymaker.makeProject(p);
-            var body = bodymaker.makeBodyOn(0, '', 'project', pbody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
             res.send(JSON.stringify(body));
         })
         .catch(err => {
@@ -224,7 +223,10 @@ function fileTeamProject(project,uid)
     })
 }
 
-
+//获取项目所在团队成员
+function getProjectTeamMember(req,res) {
+    res.send(bodymaker.makeJson(1,'wrong api'));
+}
 
 
 module.exports = {
@@ -233,5 +235,6 @@ module.exports = {
     getProjectList,
     getProjectInfo,
     getProjectTask,
-    fileProject
+    fileProject,
+    getProjectTeamMember
 }

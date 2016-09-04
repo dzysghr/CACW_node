@@ -46,7 +46,7 @@ router.post('/:taskid/members', function (req, res) {
 });
 
 //删除任务成员
-router.delete('/:taskid/members', function (req, res) {
+router.post('/:taskid/DeleteMembers', function (req, res) {
   task_bll.removeTaskMember(req, res);
 });
 
@@ -67,5 +67,7 @@ router.get('/:taskid/finish', function (req, res) {
   task_bll.finishTask(req,res);
 });
 
+
+//获取可邀请的用户
 
 module.exports = router;

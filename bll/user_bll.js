@@ -2,7 +2,7 @@ var user_dao = require('../dao/user_dao');
 var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
-var util = require('util')
+var util = require('../util/md5')
 var fs = require('fs')
 
 function getUserInfo(req, res) {
@@ -14,7 +14,7 @@ function getUserInfo(req, res) {
                 return;
             }
             var userbody = bodymaker.makeUserInfo(u, true);
-            var body = bodymaker.makeBodyOn(0, '', 'user', userbody);
+            var body = bodymaker.makeBodyOn(0, '', 'data', userbody);
             res.send(JSON.stringify(body));
         }).catch(err => {
             res.send(bodymaker.makeErrorJson(1, err));
@@ -42,6 +42,7 @@ function setUserInfo(req, res) {
  * @param {any} res
  */
 function setUserAvator(req, res) {
+
     var contentype = req.headers['content-type'] + '';
     if (contentype == undefined || contentype.indexOf('multipart/form-data') != 0) {
         res.send(bodymaker.makeErrorJson(7, 'error content-type,you should upload by multipart/form-data'));
@@ -66,12 +67,15 @@ function setUserAvator(req, res) {
                 var extName = '.jpg';  //后缀名
                 var hash = util.MD5(new Date().getMilliseconds() + '');
 
-                var newPath = form.uploadDir + '/user_' + u.id+'_'+hash+ extName;
+                var newPath = form.uploadDir + '/user_' + u.id + '_' + hash + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
-                //删除旧头像
-                fs.unlinkSync(form.uploadDir + '/user' + t.id+'_'+t.avatarUrl+ extName)
-                user_dao.setUserInfo(u,{avatarUrl:hash});
-                res.send(bodymaker.makeBody(0, ''));
+                if (u.avatarUrl) {
+                    //删除旧头像
+                    fs.unlinkSync(form.uploadDir + '/user' + u.id + '_' + u.avatarUrl + extName)
+                }
+                user_dao.setUserInfo(u, { avatarUrl: hash });
+                var body = bodymaker.makeBodyOn(0, '', 'data', hash);
+                res.json(body);
             })
         }).catch(err => {
             res.send(bodymaker.makeErrorJson(1, err));

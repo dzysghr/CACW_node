@@ -121,6 +121,10 @@ function getProjectInfo(req, res) {
         .then(p => {
             if (p == undefined)
                 throw new Error('project not found');
+           return [p,project_dao.getProjectTaskCount(p)]
+        })
+        .spread((p,count)=>{
+            p.taskCount = count;
             var pbody = bodymaker.makeProject(p);
             var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
             res.send(JSON.stringify(body));

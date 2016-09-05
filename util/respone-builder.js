@@ -115,6 +115,10 @@ function makeProject(proj) {
         isPrivate:proj.isPrivate,
         file:proj.file
     }
+
+    if(proj.taskCount)
+        p.taskCount = proj.taskCount;
+
     if(proj.team)
      p.team = {
             id:proj.team.id,

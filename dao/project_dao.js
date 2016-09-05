@@ -124,6 +124,21 @@ function getProjectById(id) {
     });
 }
 
+function getProjectTaskCount(project, state) {
+       var where = {
+        ProjectId:project.id
+    }
+    if(state=='finished')
+       where.finish = 1;
+     else if(state=='unfinish')
+       where.finish = 0;
+    return MyModel.Task.count({
+        where:where
+    });
+}
+
+
+
 function getProjectTask(project, state) {
        var where = {
         ProjectId:project.id
@@ -166,5 +181,6 @@ module.exports = {
     getProjectByTeamArray,
     getProjectTask,
     getPrivateProject,
-    fileProject
+    fileProject,
+    getProjectTaskCount
 }

@@ -51,7 +51,7 @@ function setUserAvator(req, res) {
     account_dao.getUser(req.cookies['sessionId'])
         .then(u => {
             var form = new formidable.IncomingForm();
-            form.uploadDir = +__dirname + "/../image";
+            form.uploadDir = + __dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑
             form.keepExtensions = true;	 //保留后缀
             form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小
@@ -69,9 +69,13 @@ function setUserAvator(req, res) {
 
                 var newPath = form.uploadDir + '/user_' + u.id + '_' + hash + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
+                console.log('new  '+newPath);                
                 if (u.avatarUrl) {
                     //删除旧头像
-                    fs.unlinkSync(form.uploadDir + '/user' + u.id + '_' + u.avatarUrl + extName)
+                    var old = form.uploadDir + '/user_' + u.id + '_' + u.avatarUrl + extName;
+                    console.log('old  '+old);
+                    if(fs.existsSync(old))
+                        fs.unlinkSync(old)
                 }
                 user_dao.setUserInfo(u, { avatarUrl: hash });
                 var body = bodymaker.makeBodyOn(0, '', 'data', hash);

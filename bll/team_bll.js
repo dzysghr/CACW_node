@@ -9,13 +9,13 @@ var util = require('../util/md5');
 
 function createTeam(req, res) {
     var teamname = req.params.teamname;
-    var hash =  util.MD5(new Date().getMilliseconds()+'');
+    var hash = util.MD5(new Date().getMilliseconds() + '');
     account_dao.getUserByReq(req).then(u => {
-        return team_dao.createTeam(u,teamname)
+        return team_dao.createTeam(u, teamname)
     })
-    .then(t=>{
-        team_dao.setTeamInfo(t,{avatarUrl:hash})
-    })
+        .then(t => {
+            team_dao.setTeamInfo(t, { avatarUrl: hash })
+        })
         .then((t) => {
             //检查是否带有图片
             var contentype = req.headers['content-type'] + '';
@@ -39,7 +39,7 @@ function createTeam(req, res) {
                     return;
                 }
                 var extName = '.jpg';  //后缀名
-                var newPath = form.uploadDir + '/team_' + t.id+'_'+hash+ extName;
+                var newPath = form.uploadDir + '/team_' + t.id + '_' + hash + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
                 res.send(JSON.stringify(bodymaker.makeBody(0, '')));
             })
@@ -117,13 +117,13 @@ function setTeamInfo(req, res) {
 function getTeamInfo(req, res) {
     var id = req.params.id;
     var team;
-    var teambody; 
+    var teambody;
     team_dao.getTeamByid(id)
         .then(t => {
             if (!t) {
                 throw new Error('team not found')
             }
-            team=t;
+            team = t;
             teambody = bodymaker.makeTeamInfo(t, true);
             return t.countProjects();
         })
@@ -131,7 +131,7 @@ function getTeamInfo(req, res) {
             teambody.projectCount = c;
             return team.countMember()
         })
-        .then(ms=>{
+        .then(ms => {
             teambody.memberCount = ms;
             var body = bodymaker.makeBodyOn(0, '', 'data', teambody);
             res.send(JSON.stringify(body));
@@ -287,7 +287,7 @@ function dissolveTeam(req, res) {
 
 function setTeamAvatar(req, res) {
     var session = req.cookies['sessionId'];
-    
+
     account_dao.getUser(session)
         .then(u => {
             return team_dao.getTeamByid(req.params.teamid)
@@ -317,14 +317,20 @@ function setTeamAvatar(req, res) {
                             res.send(JSON.stringify(bodymaker.makeBody(0, 'file not found,"img" key is expected')));
                             return;
                         }
-                        var hash =  util.MD5(new Date().getMilliseconds()+'');
+                        var hash = util.MD5(new Date().getMilliseconds() + '');
                         var extName = '.jpg';  //后缀名
-                        var newPath = form.uploadDir + '/team_' + t.id+'_'+hash+ extName;
+                        var newPath = form.uploadDir + '/team_' + t.id + '_' + hash + extName;
                         fs.renameSync(files['img'].path, newPath);  //重命名
                         //删除旧头像
-                        fs.unlinkSync(form.uploadDir + '/team_' + t.id+'_'+t.avatarUrl+ extName)
 
-                        team_dao.setTeamInfo(t,{avatarUrl:hash})
+                        if (t.avatarUrl)
+                        {
+                            var old = form.uploadDir + '/team_' + t.id + '_' + t.avatarUrl + extName;
+                            if(fs.existsSync(old))
+                                fs.unlinkSync(old);
+                        }
+                            
+                        team_dao.setTeamInfo(t, { avatarUrl: hash })
                         res.send(JSON.stringify(bodymaker.makeBody(0, '')));
                     })
                 })

@@ -117,14 +117,18 @@ function getProjectList(req, res) {
 //这里不检查项目与用户的关系
 function getProjectInfo(req, res) {
     var id = req.params.id;
+    var project;
     project_dao.getProjectById(id)
         .then(p => {
             if (p == undefined)
                 throw new Error('project not found');
-           return [p,project_dao.getProjectTaskCount(p)]
+
+        project = p;
+           return [project_dao.getProjectTaskCount(p),project_dao.getProjectTaskCount(p,"unfinish")]
         })
-        .spread((p,count)=>{
-            p.taskCount = count;
+        .spread((all,unfinish)=>{
+            p.taskCount = all;
+            p.unfinishTaskCount = unfinish;
             var pbody = bodymaker.makeProject(p);
             var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
             res.send(JSON.stringify(body));
@@ -144,12 +148,11 @@ function getProjectTask(req, res) {
                         throw new Error('project not found');
                     if (p.isPrivate)
                         return getPrivateProjectTask(u, p, req.query.state);
-
                     return getTeamProjectTask(u, p, req.query.state);
                 })
                 .then(ts => {
                     var tbody = bodymaker.makeTaskInfoArray(ts);
-                    res.send(JSON.stringify(bodymaker.makeBodyOn(0, '', 'tasks', tbody)));
+                    res.send(JSON.stringify(bodymaker.makeBodyOn(0, '', 'data', tbody)));
                 })
         })
         .catch(err => {
@@ -158,7 +161,7 @@ function getProjectTask(req, res) {
 }
 
 
-//获取私人项目的任务，验证用户是否来自团队
+//获取团队项目的任务，验证用户是否来自团队
 function getTeamProjectTask(user, project, state) {
     return new Promise(function (res, ref) {
         res();
@@ -167,13 +170,13 @@ function getTeamProjectTask(user, project, state) {
             return project.getTeam();
         })
         .then(t => {
-            return t.hasMember(u.id)
+            return t.hasMember(user.id)
         })
         .then(has => {
             if (has) {
                 state = state || 'all';
-                if (state != 'all' && state != 'finished' && state != 'finished')
-                    return Promise.reject('error state');
+                if (state != 'all' && state != 'finished' && state != 'unfinish')
+                    return new Error('error state');
                 return project_dao.getProjectTask(project, state);
             } else
                 return new Error('you are not member in project');

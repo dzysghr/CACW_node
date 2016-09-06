@@ -7,6 +7,9 @@ function makeBody(code, msg) {
 }
 
 function makeJson(code, msg) {
+
+    msg = msg|'unknow error';
+
     var resbody = {
         state_code: code,
         error_msg: msg
@@ -118,6 +121,8 @@ function makeProject(proj) {
 
     if(proj.taskCount)
         p.taskCount = proj.taskCount;
+    if(proj.unfinishTaskCount)
+        p.unfinishTaskCount = proj.unfinishTaskCount;
 
     if(proj.team)
      p.team = {

@@ -122,14 +122,13 @@ function getProjectInfo(req, res) {
         .then(p => {
             if (p == undefined)
                 throw new Error('project not found');
-
         project = p;
            return [project_dao.getProjectTaskCount(p),project_dao.getProjectTaskCount(p,"unfinish")]
         })
         .spread((all,unfinish)=>{
-            p.taskCount = all;
-            p.unfinishTaskCount = unfinish;
-            var pbody = bodymaker.makeProject(p);
+            project.taskCount = all;
+            project.unfinishTaskCount = unfinish;
+            var pbody = bodymaker.makeProject(project);
             var body = bodymaker.makeBodyOn(0, '', 'data', pbody);
             res.send(JSON.stringify(body));
         })

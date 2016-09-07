@@ -8,7 +8,7 @@ function makeBody(code, msg) {
 
 function makeJson(code, msg) {
 
-    msg = msg|'unknow error';
+    msg = msg||'unknow error';
 
     var resbody = {
         state_code: code,
@@ -154,7 +154,8 @@ function makeTaskInfo(task) {
         finish:task.finish,
         project:{
             id:task.project.id,
-            name:task.project.name
+            name:task.project.name,
+            isPrivate:task.project.isPrivate
         }
     }
     return t;

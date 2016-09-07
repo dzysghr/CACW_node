@@ -11,7 +11,7 @@ function createTask(req, res) {
         && body.location && body.projectId
         && body.startDate && body.endDate
         && body.members) == undefined) {
-        res.send(bodymaker.makeJson(1, 'params error'));
+        res.json(bodymaker.makeBody(1, 'params error'));
         return;
     }
     account_dao.getUserByReq(req)
@@ -27,7 +27,7 @@ function createTask(req, res) {
                 })
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
 }
 
@@ -118,10 +118,10 @@ function setTaskInfo(req, res) {
             return t.save();
         })
         .then(() => {
-            res.send(bodymaker.makeJson(0, ''));
+            res.json(bodymaker.makeBody(0, ''));
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
 }
 
@@ -148,7 +148,7 @@ function addTaskMember(req, res) {
                             return task.addMember(req.body);
                         })
                         .then(() => {
-                            res.send(bodymaker.makeJson(0, ''));
+                            res.json(bodymaker.makeBody(0, ''));
                             //通知成员
                             return account_dao.getDeviceIds(req.body);
                         })
@@ -189,7 +189,7 @@ function removeTaskMember(req, res) {
                     return task.removeMember(req.body);
                 })
                 .then(() => {
-                    res.send(bodymaker.makeJson(0, ''));
+                    res.json(bodymaker.makeBody(0, ''));
                     return account_dao.getDeviceIds(req.body);
                 })
                 .then(ids => {
@@ -200,7 +200,7 @@ function removeTaskMember(req, res) {
                 })
         })
         .catch(err => {
-            res.send(1, err.message);
+            res.json(bodymaker.makeBody(1, err.message));
             console.log(err.message);
         })
 }
@@ -221,10 +221,10 @@ function getTaskList(req, res) {
         .then(tasks => {
             var tbody = bodymaker.makeTaskInfoArray(tasks)
             var body = bodymaker.makeBodyOn(0, '', 'data', tbody);
-            res.send(JSON.stringify(body));
+            res.json(body);
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
 }
 
@@ -235,7 +235,7 @@ function getTask(req, res) {
                 throw new Error('task not found');
             var taskbody = bodymaker.makeTaskInfo(t);
             var body = bodymaker.makeBodyOn(0, '', 'task', taskbody);
-            res.send(JSON.stringify(body));
+            res.json(body);
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -253,7 +253,7 @@ function getTaskMembers(req, res) {
         .then(users => {
             var userbody = bodymaker.makeTaskMembers(users);
             var body = bodymaker.makeBodyOn(0, '', 'data', userbody);
-            res.send(JSON.stringify(body));
+            res.json(body);
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -273,11 +273,12 @@ function finishTask(req, res) {
                     return task_dao.setTaskFinish(t, u);
                 })
                 .then((c, r) => {
-                    res.send(bodymaker.makeJson(0, ''));
+
+                    res.json(bodymaker.makeBody(0, ''));
                 })
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
 }
 
@@ -298,7 +299,7 @@ function deleteTask(req, res) {
                 .then(() => {
                     console.log('delete succeed');
 
-                    res.send(bodymaker.makeJson(0, ''));
+                    res.json(bodymaker.makeBody(0, ''));
                     return task_dao.getTaskMembers(task);
                 })
                 .then(member => {
@@ -320,7 +321,7 @@ function deleteTask(req, res) {
                 })
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
             console.log(err.message);
         })
 }

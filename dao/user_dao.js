@@ -43,7 +43,12 @@ function setUserInfo(user, params) {
 // })
 
 //查询用户
-function queryUser(params) {
+function queryUser(params,limit,offset) {
+
+
+    limit = limit||10;
+    offset = offset||0;
+
     var sql = 'select * from Users where ';
     var flag = false;
     if (params.id) {
@@ -63,8 +68,11 @@ function queryUser(params) {
         return new Promise((resolve,reject)=>resolve());
 
     if (flag) {
-        sql += '1=2';
+        sql += '1=2 ';
     }
+    sql  +='limit '+offset+','+limit; 
+
+
     return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }
 

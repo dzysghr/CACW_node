@@ -83,6 +83,9 @@ function createTask(taskparams, user) {
         projectId: taskparams.projectId,
         AdminId: user.id,
         finish: 0
+    })
+    .then(t=>{
+        return getTaskById(t.id);
     });
 }
 
@@ -109,7 +112,7 @@ function setTaskFinish(task, user) {
     return MyModel.Task.update({ finish: 1}, 
         {
             where: {
-                taskId: task.id
+                id: task.id
             }
         })
 }

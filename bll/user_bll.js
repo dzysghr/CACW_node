@@ -108,21 +108,20 @@ function searchUser(req, res) {
         }
     }
     else {
-        res.send(bodymaker.makeJson(1, 'query params not found ,you should set url params like /search?id=xxx'))
+        res.json(bodymaker.makebody(1, 'query params not found ,you should set url params like /search?id=xxx'))
         return
     }
-    user_dao.queryUser(p)
+    user_dao.queryUser(p,req.query.limit,req.query.offset)
         .then(us => {
             if (us == undefined)
                 throw new Error('user not found');
             var ubody = bodymaker.makeUserInfoArray(us, false);
-            var body = bodymaker.makeBodyOn(0, '', 'users', ubody);
-            res.send(JSON.stringify(body));
+            var body = bodymaker.makeBodyOn(0, '', 'data', ubody);
+            res.json(body);
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makebody(1, err.message));
         })
-
 }
 
 module.exports = { getUserInfo, setUserInfo, setUserAvator, searchUser }

@@ -10,12 +10,13 @@ function getMessage(user) {
     })
 }
 
-function sendMessage(me,to,content,type) {
+function sendMessage(me,to,content,type,teamid) {
     return MyModel.Message.create({
-        senderId:me.id,
-        recieverId:to.id,
+        senderId:me.id||me,
+        recieverId:to.id||to,
         content:content,
-        type:type
+        type:type,
+        teamid:teamid
     })
 }
 

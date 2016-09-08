@@ -1,6 +1,7 @@
 var team_dao = require('../dao/team_dao');
 var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
+var message_dao = require('../dao/message_dao');
 var formidable = require('formidable')
 var fs = require('fs');
 var MyModel = require('../dao/define');
@@ -341,7 +342,6 @@ function setTeamAvatar(req, res) {
 
 
 function searchTeam(req, res) {
-
     if (req.query.query != undefined) {
         var p = {
             id: req.query.query,
@@ -368,7 +368,7 @@ function searchTeam(req, res) {
             ts.forEach(e => {
                 ids.push(e.id);
             });
-            return team_dao.queryTeam(p,req.query.limit,req.query.offset,ids);
+            return team_dao.queryTeam(p, req.query.limit, req.query.offset, ids);
         })
         .then(ts => {
             if (ts == undefined)
@@ -413,11 +413,50 @@ function getTeamPoject(req, res) {
         })
 }
 
+
+function teamApply(req, res) {
+    if (req.body.teamid == undefined)
+        res.json(bodymaker.makeBody(7, 'teamid not found in json'));
+
+    var team;
+    account_dao.getUserByReq(req)
+        .then(me => {
+            return team_dao.getTeamByid(req.body.teamid)
+                .then(t => {
+                    if (!t)
+                        throw new Error('team not found');
+                    team = t;
+                    return t.hasMember(me.id);
+                })
+                .then(has => {
+                    if (has)
+                        throw new Error('you have been a member in this team');
+                    return message_dao.sendMessage(me, team.AdminId, req.body.content,1, req.body.teamid);
+                })
+                .then(m => {
+                    //创建成功，发送推送
+                    res.send(bodymaker.makeJson(0, ''));
+                    return account_dao.getDeviceIds([team.AdminId]);
+                })
+                .then(deviceids => {
+                    if (deviceids.length > 0) {
+                        var content = bodymaker.makePushContentJson('ms', me.id, '用户' + me.nickName + '申请加入团队 ' + team.teamName);
+                        client.pushToDevices(deviceids, '团队申请', content);
+                    }
+                })
+                .catch(err => {
+                    res.send(bodymaker.makeJson(1, err.message));
+                })
+
+        })
+}
+
 module.exports = {
     createTeam,
     setTeamInfo, getTeamInfo,
     getTeamMemer, getTeamList,
     deleteMember, leaveTeam,
     dissolveTeam, setTeamAvatar,
-    searchTeam, getTeamPoject
+    searchTeam, getTeamPoject,
+    teamApply
 }

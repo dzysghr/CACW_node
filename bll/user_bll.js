@@ -111,7 +111,7 @@ function searchUser(req, res) {
         res.json(bodymaker.makebody(1, 'query params not found ,you should set url params like /search?id=xxx'))
         return
     }
-    account_dao.getUserByReq(req)
+    return  account_dao.getUserByReq(req)
         .then(u => {
             return user_dao.queryUser(p, req.query.limit, req.query.offset,[u.id])
                 .then(us => {

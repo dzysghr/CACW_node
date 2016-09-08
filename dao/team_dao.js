@@ -129,9 +129,7 @@ function getTeamProject(team, state) {
         where.file = 0;
 
     return MyModel.Project.findAll({
-        where: where,
-        limit: limit,
-        offset: offset
+        where: where
     })
 }
 

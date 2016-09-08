@@ -113,6 +113,9 @@ var Message = sequelize.define('message', {
   },
   type: {
     type: Sequelize.INTEGER
+  },
+  teamid: {
+    type: Sequelize.INTEGER
   }
 },{charset:'utf8'});
 

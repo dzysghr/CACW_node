@@ -21,11 +21,12 @@ router.post('/create/:teamname', function (req, res) {
     team_bll.createTeam(req, res);
 });
 
-
-//修改团队
-router.post('/:id', function (req, res) {
-    team_bll.setTeamInfo(req, res);
+//团队申请
+router.post('/apply', function (req, res) {
+    team_bll.teamApply(req,res);
 });
+
+
 
 //解散团队
 router.delete('/:teamid/dissolve', function (req, res) {
@@ -75,6 +76,11 @@ router.delete('/:teamid', function (req, res) {
 //获取团队项目列表
 router.get('/:teamid/projectlist', function (req, res) {
     team_bll.getTeamPoject(req,res);
+});
+
+//修改团队
+router.post('/:id', function (req, res) {
+    team_bll.setTeamInfo(req, res);
 });
 
 module.exports = router;

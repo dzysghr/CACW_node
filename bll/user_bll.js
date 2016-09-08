@@ -69,12 +69,12 @@ function setUserAvator(req, res) {
 
                 var newPath = form.uploadDir + '/user_' + u.id + '_' + hash + extName;
                 fs.renameSync(files['img'].path, newPath);  //重命名
-                console.log('new  '+newPath);                
+                console.log('new  ' + newPath);
                 if (u.avatarUrl) {
                     //删除旧头像
                     var old = form.uploadDir + '/user_' + u.id + '_' + u.avatarUrl + extName;
-                    console.log('old  '+old);
-                    if(fs.existsSync(old))
+                    console.log('old  ' + old);
+                    if (fs.existsSync(old))
                         fs.unlinkSync(old)
                 }
                 user_dao.setUserInfo(u, { avatarUrl: hash });
@@ -111,17 +111,22 @@ function searchUser(req, res) {
         res.json(bodymaker.makebody(1, 'query params not found ,you should set url params like /search?id=xxx'))
         return
     }
-    user_dao.queryUser(p,req.query.limit,req.query.offset)
-        .then(us => {
-            if (us == undefined)
-                throw new Error('user not found');
-            var ubody = bodymaker.makeUserInfoArray(us, false);
-            var body = bodymaker.makeBodyOn(0, '', 'data', ubody);
-            res.json(body);
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return user_dao.queryUser(p, req.query.limit, req.query.offset,[u.id])
+                .then(us => {
+                    if (us == undefined)
+                        throw new Error('user not found');
+                    var ubody = bodymaker.makeUserInfoArray(us, false);
+                    var body = bodymaker.makeBodyOn(0, '', 'data', ubody);
+                    res.json(body);
+                })
         })
         .catch(err => {
             res.json(bodymaker.makebody(1, err.message));
         })
+
+
 }
 
 module.exports = { getUserInfo, setUserInfo, setUserAvator, searchUser }

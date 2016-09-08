@@ -368,7 +368,7 @@ function searchTeam(req, res) {
             ts.forEach(e => {
                 ids.push(e.id);
             });
-            return team_dao.queryTeam(p, ids);
+            return team_dao.queryTeam(p,req.query.limit,req.query.offset,ids);
         })
         .then(ts => {
             if (ts == undefined)

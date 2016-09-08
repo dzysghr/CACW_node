@@ -43,37 +43,35 @@ function setUserInfo(user, params) {
 // })
 
 //查询用户
-function queryUser(params,limit,offset) {
+function queryUser(params,limit,offset,except) {
 
+    limit = limit || 10;
+    offset = offset || 0;
+    limit = parseInt(limit);
+    offset = parseInt(offset);
 
-    limit = limit||10;
-    offset = offset||0;
-
-    var sql = 'select * from Users where ';
-    var flag = false;
+    var $or =[];
     if (params.id) {
-        sql = sql + 'id = \'' + params.id + '\' or ';
-        flag = true;
+        $or.push({id:params.id});
     }
     if (params.username) {
-        sql = sql + "username='" + params.username + "' or "
-        flag = true;
+        $or.push({username:params.username});
     }
-
     if (params.nickName) {
-        sql = sql + "nickName like '%" + params.nickName + "%' or ";
-        flag = true;
+         $or.push({nickName:{$like:'%'+params.nickName+'%'}});
     }
-    if (!flag)
-        return new Promise((resolve,reject)=>resolve());
+   var where ={
+       $or:$or
+   }
+   if(except)
+        where.id={$notIn:except};
 
-    if (flag) {
-        sql += '1=2 ';
-    }
-    sql  +='limit '+offset+','+limit; 
+   return  MyModel.User.findAll({
+       where:where,
+       limit:limit,
+       offset:offset
+   });
 
-
-    return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
 }
 
 //设置头像

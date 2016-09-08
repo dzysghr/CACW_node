@@ -28,19 +28,19 @@ function getTeamMembers(teamid, limit, offset) {
         }
     }).then(tm => {
         //拿到用户id
-        var ids =new Array();
+        var ids = new Array();
         for (var i = 0; i < tm.length; i++) {
             ids[i] = tm[i].userId;
         }
-         var findarg =  {
-                where:
-                {
-                    id: {$in: ids}
-                }
+        var findarg = {
+            where:
+            {
+                id: { $in: ids }
             }
-        if(limit>0)
+        }
+        if (limit > 0)
             findarg.limit = parseInt(limit);
-        if(offset>0)
+        if (offset > 0)
             findarg.offset = parseInt(offset);
 
         return MyModel.User.findAll(findarg);
@@ -88,64 +88,63 @@ function getTeamList(user) {
 
 
 //查询团队,查询参数：id 、teamName
-function queryTeam(params,except) {
-    // var sql = 'select * from teams where ';
-    // var flag = false;
-    // if (params.id) {
-    //     sql = sql + 'id = \''+ params.id +'\' or ';
-    //     flag = true;
-    // }
-    // if (params.teamName) {
-    //     sql = sql + "teamName like '%" + params.teamName + "%' or ";
-    //     flag = true;
-    // }
-    // if (!flag)
-    //     return new Promise((resolve, reject) => { resolve() });
-    // if (flag) {
-    //     sql += '1=2';
-    // }
-    // return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT });
+function queryTeam(params, limit, offset, except) {
 
-    var $or =[];
+    limit = limit || 10;
+    offset = offset || 0;
+    limit = parseInt(limit);
+    offset = parseInt(offset);
+
+    var $or = [];
     if (params.id) {
-        $or.push({id:params.id});
+        $or.push({ id: params.id });
     }
     if (params.teamName) {
-         $or.push({teamName:{$like:'%'+params.teamName+'%'}});
+        $or.push({ teamName: { $like: '%' + params.teamName + '%' } });
     }
-    except = except ||[];
-   return  MyModel.Team.findAll({
-       where:{
-            $or:$or,
-            id:{$notIn:except}
-       }
-   });
-}
 
-function getTeamProject(team,state) {
 
     var where = {
-        teamId:team.id
+        $or: $or
+    }
+    if (except)
+        where.id = { $notIn: except };
+
+    return MyModel.Team.findAll({
+        where: where,
+        limit: limit,
+        offset: offset
+    });
+}
+
+function getTeamProject(team, state) {
+
+    var where = {
+        teamId: team.id
     }
 
-    if(state=='file')
-        where.file =1;
-    else if(state=='unfile')
+    if (state == 'file')
+        where.file = 1;
+    else if (state == 'unfile')
         where.file = 0;
 
-    return MyModel.Project.findAll({where:where})
+    return MyModel.Project.findAll({
+        where: where,
+        limit: limit,
+        offset: offset
+    })
 }
 
 
-module.exports = { 
-    queryTeam, 
-    getTeamList, 
-    setTeamInfo, 
+module.exports = {
+    queryTeam,
+    getTeamList,
+    setTeamInfo,
     addTeamMember,
-    removeTeamMember, 
+    removeTeamMember,
     getTeamByid,
     getTeamMembers,
-    createTeam ,
+    createTeam,
     getTeamProject
 }
 

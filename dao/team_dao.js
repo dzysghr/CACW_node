@@ -88,23 +88,38 @@ function getTeamList(user) {
 
 
 //查询团队,查询参数：id 、teamName
-function queryTeam(params) {
-    var sql = 'select * from teams where ';
-    var flag = false;
+function queryTeam(params,except) {
+    // var sql = 'select * from teams where ';
+    // var flag = false;
+    // if (params.id) {
+    //     sql = sql + 'id = \''+ params.id +'\' or ';
+    //     flag = true;
+    // }
+    // if (params.teamName) {
+    //     sql = sql + "teamName like '%" + params.teamName + "%' or ";
+    //     flag = true;
+    // }
+    // if (!flag)
+    //     return new Promise((resolve, reject) => { resolve() });
+    // if (flag) {
+    //     sql += '1=2';
+    // }
+    // return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT });
+
+    var $or =[];
     if (params.id) {
-        sql = sql + 'id = \''+ params.id +'\' or ';
-        flag = true;
+        $or.push({id:params.id});
     }
     if (params.teamName) {
-        sql = sql + "teamName like '%" + params.teamName + "%' or ";
-        flag = true;
+         $or.push({teamName:{$like:'%'+params.teamName+'%'}});
     }
-    if (!flag)
-        return new Promise((resolve, reject) => { resolve() });
-    if (flag) {
-        sql += '1=2';
-    }
-    return Sequelize.query(sql, { type: Sequelize.QueryTypes.SELECT })
+    except = except ||[];
+   return  MyModel.Team.findAll({
+       where:{
+            $or:$or,
+            id:{$notIn:except}
+       }
+   });
 }
 
 function getTeamProject(team,state) {

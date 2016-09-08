@@ -207,7 +207,7 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
                 //获取团队的所有项目
                 .spread((ps) => {
 
-                    if (ps == undefined || ps.lenght == 0)
+                    if (ps == undefined || ps.length == 0)
                         return;
 
                     var pid = [];
@@ -323,13 +323,12 @@ function setTeamAvatar(req, res) {
                         fs.renameSync(files['img'].path, newPath);  //重命名
                         //删除旧头像
 
-                        if (t.avatarUrl)
-                        {
+                        if (t.avatarUrl) {
                             var old = form.uploadDir + '/team_' + t.id + '_' + t.avatarUrl + extName;
-                            if(fs.existsSync(old))
+                            if (fs.existsSync(old))
                                 fs.unlinkSync(old);
                         }
-                            
+
                         team_dao.setTeamInfo(t, { avatarUrl: hash })
                         res.send(JSON.stringify(bodymaker.makeBody(0, '')));
                     })
@@ -360,17 +359,26 @@ function searchTeam(req, res) {
         res.send(bodymaker.makeJson(1, 'query params not found ,you should set url params like /search?teamName=xxx'))
         return
     }
-
-    team_dao.queryTeam(p)
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return team_dao.getTeamList(u);
+        })
+        .then(ts => {
+            var ids = [];
+            ts.forEach(e => {
+                ids.push(e.id);
+            });
+            return team_dao.queryTeam(p, ids);
+        })
         .then(ts => {
             if (ts == undefined)
                 throw new Error('team not found');
             var tbody = bodymaker.makeTeamInfoArray(ts, true);
-            var body = bodymaker.makeBodyOn(0, '', 'teams', tbody);
-            res.send(JSON.stringify(body));
+            var body = bodymaker.makeBodyOn(0, '', 'data', tbody);
+            res.json(body);
         })
         .catch(err => {
-            res.send(bodymaker.makeJson(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
 }
 

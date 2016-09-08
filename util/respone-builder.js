@@ -7,9 +7,6 @@ function makeBody(code, msg) {
 }
 
 function makeJson(code, msg) {
-
-    msg = msg||'unknow error';
-
     var resbody = {
         state_code: code,
         error_msg: msg

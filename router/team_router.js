@@ -26,7 +26,10 @@ router.post('/apply', function (req, res) {
     team_bll.teamApply(req,res);
 });
 
-
+//团队邀请
+router.get('/:teamid/invite', function (req, res) {
+    team_bll.teamInvite(req,res);
+});
 
 //解散团队
 router.delete('/:teamid/dissolve', function (req, res) {

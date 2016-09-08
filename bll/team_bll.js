@@ -1,6 +1,7 @@
 var team_dao = require('../dao/team_dao');
 var bodymaker = require('../util/respone-builder');
 var account_dao = require('../dao/account_dao');
+var user_dao = require('../dao/user_dao');
 var message_dao = require('../dao/message_dao');
 var formidable = require('formidable')
 var fs = require('fs');
@@ -415,8 +416,11 @@ function getTeamPoject(req, res) {
 
 
 function teamApply(req, res) {
-    if (req.body.teamid == undefined)
+    if (req.body.teamid == undefined) {
         res.json(bodymaker.makeBody(7, 'teamid not found in json'));
+        return;
+    }
+
 
     var team;
     account_dao.getUserByReq(req)
@@ -431,7 +435,7 @@ function teamApply(req, res) {
                 .then(has => {
                     if (has)
                         throw new Error('you have been a member in this team');
-                    return message_dao.sendMessage(me, team.AdminId, req.body.content,1, req.body.teamid);
+                    return message_dao.sendMessage(me, team.AdminId, req.body.content, 1, req.body.teamid);
                 })
                 .then(m => {
                     //创建成功，发送推送
@@ -445,10 +449,55 @@ function teamApply(req, res) {
                     }
                 })
                 .catch(err => {
-                    res.send(bodymaker.makeJson(1, err.message));
+                    res.json(bodymaker.makeBody(1, err.message));
                 })
 
         })
+}
+
+function teamInvite(req, res) {
+    if (req.query.uid == undefined) {
+        res.json(bodymaker.makeBody(7, 'query params <uid> not found'));
+        return;
+    }
+
+    var to;
+    var team;
+    account_dao.getUserByReq(req)
+        .then(me => {
+            return user_dao.getUserbyId(req.query.uid)
+                .then(re => {
+                    if (!re)
+                        throw new Error('user not found');
+                    to = re;
+                    return team_dao.getTeamByid(req.params.teamid);
+                })
+                .then(t => {
+                    if (!t)
+                        throw new Error('team not found');
+                    team = t;
+                    return t.hasMember(to.id);
+                })
+                .then(has => {
+                    if (has)
+                        throw new Error('the user have been in this team');
+                    return message_dao.sendMessage(me, to, '邀请你加入团队：' + team.teamName, 0, team.id);
+                }).then(m => {
+                    //创建成功，发送推送
+                    res.json(bodymaker.makeBody(0,''));
+                    return account_dao.getDeviceIds([req.body.recieverId]);
+                })
+                .then(deviceids => {
+                    if (deviceids.length > 0) {
+                        var content = bodymaker.makePushContentJson('ms', me.id, '用户' + me.nickName + '邀请你加入团队 ' + team.teamName);
+                        client.pushToDevices(deviceids, '团队邀请', content);
+                    }
+                })
+        })
+        .catch(err => {
+            res.json(bodymaker.makeBody(1, err.message));
+        })
+
 }
 
 module.exports = {
@@ -458,5 +507,5 @@ module.exports = {
     deleteMember, leaveTeam,
     dissolveTeam, setTeamAvatar,
     searchTeam, getTeamPoject,
-    teamApply
+    teamApply, teamInvite
 }

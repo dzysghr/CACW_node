@@ -27,7 +27,6 @@ var util = require('./util/md5');
 var hash =  util.MD5(new Date().getMilliseconds()+'');
 console.log(hash);
 
-console.log();
 // Array.prototype.contains = function(obj) {
 //     var i = this.length;
 //     while (i--) {

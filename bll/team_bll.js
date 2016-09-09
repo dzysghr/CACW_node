@@ -27,7 +27,7 @@ function createTeam(req, res) {
                 return;
             }
             var form = new formidable.IncomingForm();
-            form.uploadDir = +__dirname + "/../image";
+            form.uploadDir = __dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑
             form.keepExtensions = true;	 //保留后缀
             form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小

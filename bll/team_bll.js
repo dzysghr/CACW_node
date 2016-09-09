@@ -12,11 +12,12 @@ var util = require('../util/md5');
 function createTeam(req, res) {
     var teamname = req.params.teamname;
     var hash = util.MD5(new Date().getMilliseconds() + '');
-    account_dao.getUserByReq(req).then(u => {
-        return team_dao.createTeam(u, teamname)
-    })
+    account_dao.getUserByReq(req)
+        .then(u => {
+            return team_dao.createTeam(u, teamname);
+        })
         .then(t => {
-            team_dao.setTeamInfo(t, { avatarUrl: hash })
+            return team_dao.setTeamInfo(t, { avatarUrl: hash })
         })
         .then((t) => {
             //检查是否带有图片
@@ -433,7 +434,7 @@ function teamApply(req, res) {
                 .then(has => {
                     if (has)
                         throw new Error('you have been a member in this team');
-                    return message_dao.sendMessage(me, team.AdminId, req.query.content, 1,req.query.tid);
+                    return message_dao.sendMessage(me, team.AdminId, req.query.content, 1, req.query.tid);
                 })
                 .then(m => {
                     //创建成功，发送推送
@@ -483,7 +484,7 @@ function teamInvite(req, res) {
                     return message_dao.sendMessage(me, to, '邀请你加入团队：' + team.teamName, 0, team.id);
                 }).then(m => {
                     //创建成功，发送推送
-                    res.json(bodymaker.makeBody(0,''));
+                    res.json(bodymaker.makeBody(0, ''));
                     return account_dao.getDeviceIds([req.body.recieverId]);
                 })
                 .then(deviceids => {

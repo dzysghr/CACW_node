@@ -9,13 +9,18 @@ var Sequelize = MyModel.sequelize;
  * @returns t
  */
 function createTeam(user, teamname) {
+    var team;
     return MyModel.Team.create(
         {
             teamName: teamname,
             AdminId: user.id
         }
     ).then(t => {
+        team = t;
         return t.addMember(user);
+    })
+    .then(()=>{
+        return team;
     });
 }
 
@@ -72,7 +77,6 @@ function addTeamMember(teamid, user) {
 
 //修改团队资料
 function setTeamInfo(team, params) {
-
     team.summary = params.summary || team.summary;
     team.teamName = params.teamName || team.teamName;
     team.notice = params.notice || team.notice;

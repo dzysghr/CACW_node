@@ -6,35 +6,39 @@ function getMessage(user) {
     return MyModel.Message.findAll({
         where: {
             recieverId: user.id
-        }
+        },
+        include: [{
+            model: MyModel.User,
+           attributes: ['id', 'nickName', 'avatarUrl']
+            
+        }]
     })
 }
 
-function sendMessage(me,to,content,type,teamid) {
+function sendMessage(me, to, content, type, teamid) {
     return MyModel.Message.create({
-        senderId:me.id||me,
-        recieverId:to.id||to,
-        content:content,
-        type:type,
-        teamid:teamid
+        userId: me.id || me,
+        recieverId: to.id || to,
+        content: content,
+        type: type,
+        teamid: teamid
     })
 }
 
-function deleteMsgArray(msgs)
-{
-    var ids =[];
+function deleteMsgArray(msgs) {
+    var ids = [];
     for (var i = 0; i < msgs.length; i++) {
-         ids[i]= msgs[i].id;
+        ids[i] = msgs[i].id;
     }
 
     return MyModel.Message.destroy({
-        where:{
-            id:{
-                $in:ids
+        where: {
+            id: {
+                $in: ids
             }
         }
     })
 }
 
-module.exports={deleteMsgArray,getMessage,sendMessage}
+module.exports = { deleteMsgArray, getMessage, sendMessage }
 

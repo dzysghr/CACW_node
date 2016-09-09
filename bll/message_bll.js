@@ -13,9 +13,9 @@ function getMessage(req, res) {
         })
         .then(msg => {
             var mbody = bodymaker.makeMsgArray(msg);
-            var body = bodymaker.makeBodyOn(0, '', 'msg', mbody);
-            res.send(JSON.stringify(body));
-            return message_dao.deleteMsgArray(msg);
+            var body = bodymaker.makeBodyOn(0, '', 'data', mbody);
+            res.json(body);
+           // return message_dao.deleteMsgArray(msg);
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -27,14 +27,10 @@ function sendMessage(req, res) {
         res.send(bodymaker.makeJson(1, 'lack param (content)'));
         return;
     }
-    if (req.body.type == undefined) {
-        res.send(bodymaker.makeJson(1, 'lack param (type)'));
-    }
     if (req.body.recieverId == undefined) {
         res.send(bodymaker.makeJson(1, 'lack param (recieverId)'));
         return;
     }
-
     account_dao.getUserByReq(req)
         .then(u => {
             if (u.id == req.body.recieverId)
@@ -44,12 +40,10 @@ function sendMessage(req, res) {
                 .then(re => {
                     if (!re)
                         throw new Error('reciever not found');
-                    if (req.body.type == 1)
-                        return handleTeamApply(req, res, u, re);
-                    if (req.body.type == 0)
-                        return handleTeamInvite(req, res, u, re);
-                    if(req.body.type==2)
-                        return handleUserMsg(req,res,u,re);
+                    return message_dao.sendMessage(u,re,req.body.content,3);
+                })
+                .then(m=>{
+                    res.json(bodymaker.makeBody(0,''));
                 })
                 .catch(err => {
                     res.send(bodymaker.makeJson(1, err.message));
@@ -62,6 +56,7 @@ function handleUserMsg(req,res,me,reciever)
     
 }
 
+//过期
 function handleTeamInvite(req, res, me, reciever) {
     var team;
     if (req.body.teamid == undefined) {
@@ -94,7 +89,7 @@ function handleTeamInvite(req, res, me, reciever) {
         })
 }
 
-
+//过期
 function handleTeamApply(req, res, me, reciever) {
     var team;
     if (req.body.teamid == undefined) {

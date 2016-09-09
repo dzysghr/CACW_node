@@ -193,7 +193,12 @@ function makeMessage(msg) {
         id:msg.id,
         type:msg.type,
         content:msg.content,
-        senderId:msg.senderId
+        sender:{
+            id:msg.user.id,
+            nickName:msg.user.nickName,
+            avatarUrl:msg.user.avatarUrl
+        },
+        teamid:msg.teamid
     }
     return m;
 }

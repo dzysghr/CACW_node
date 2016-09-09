@@ -24,7 +24,7 @@ var User = sequelize.define('user', {
     type: Sequelize.STRING
   },
   nickName: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,defaultValue: '蚂蚁'
   },
   avatarUrl: {
     type: Sequelize.STRING
@@ -114,6 +114,9 @@ var Message = sequelize.define('message', {
   type: {
     type: Sequelize.INTEGER
   },
+  recieverId:{
+     type: Sequelize.INTEGER
+  },
   teamid: {
     type: Sequelize.INTEGER
   }
@@ -174,20 +177,30 @@ Team.belongsToMany(User,{through:TeamMember,as:'Member'});
 User.belongsToMany(Team,{through:TeamMember,as:'Team'}); //user.getTeam()
 
 
-
-
-Message.belongsTo(User,{as:'sender'});
-Message.belongsTo(User,{as:'reciever'});
+//User.hasMany(Message);
+User.hasMany(Message)
+Message.belongsTo(User);//这个不行
 
 
 Task.belongsTo(User,{as:'Admin'});
 Team.belongsTo(User,{as:'Admin'});
 Project.belongsTo(User,{as:'Admin'});
-
 Session.belongsTo(User);
 
 sequelize.sync();
-//User.sync({force:true});
+//sequelize.sync({force:true});
+
+
+// function getMessage(user) {
+//     return Message.findAll({
+       
+//         include: [{
+//              model: User
+//         }]
+//     })
+// }
+// getMessage({});
+
 
 module.exports = {Task,Team,User,Project,Session,Message,TaskMember,TeamMember,sequelize};
 

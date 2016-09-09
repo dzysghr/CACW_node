@@ -416,16 +416,14 @@ function getTeamPoject(req, res) {
 
 
 function teamApply(req, res) {
-    if (req.body.teamid == undefined) {
-        res.json(bodymaker.makeBody(7, 'teamid not found in json'));
+    if (req.query.tid == undefined) {
+        res.json(bodymaker.makeBody(7, 'tid not found in query'));
         return;
     }
-
-
     var team;
     account_dao.getUserByReq(req)
         .then(me => {
-            return team_dao.getTeamByid(req.body.teamid)
+            return team_dao.getTeamByid(req.query.tid)
                 .then(t => {
                     if (!t)
                         throw new Error('team not found');
@@ -435,7 +433,7 @@ function teamApply(req, res) {
                 .then(has => {
                     if (has)
                         throw new Error('you have been a member in this team');
-                    return message_dao.sendMessage(me, team.AdminId, req.body.content, 1, req.body.teamid);
+                    return message_dao.sendMessage(me, team.AdminId, req.query.content, 1,req.query.tid);
                 })
                 .then(m => {
                     //创建成功，发送推送
@@ -449,6 +447,7 @@ function teamApply(req, res) {
                     }
                 })
                 .catch(err => {
+                    console.log(err);
                     res.json(bodymaker.makeBody(1, err.message));
                 })
 

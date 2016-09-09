@@ -22,7 +22,7 @@ router.post('/create/:teamname', function (req, res) {
 });
 
 //团队申请
-router.post('/apply', function (req, res) {
+router.get('/apply', function (req, res) {
     team_bll.teamApply(req,res);
 });
 

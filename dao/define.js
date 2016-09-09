@@ -52,10 +52,10 @@ var Task = sequelize.define('task', {
     type: Sequelize.STRING
   },
   startDate: {
-    type: Sequelize.DATE
+    type: Sequelize.STRING
   },
   endDate: {
-    type: Sequelize.DATE
+    type: Sequelize.STRING
   },
   location: {
     type: Sequelize.STRING

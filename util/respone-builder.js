@@ -145,8 +145,8 @@ function makeTaskInfo(task) {
         title:task.title,
         content:task.content,
         location:task.location,
-        startDate:task.startDate.toLocaleString(),
-        endDate:task.endDate.toLocaleString(),
+        startDate:task.startDate, //.toLocaleString(),
+        endDate:task.endDate,  //.toLocaleString(),
         AdminId:task.AdminId,
         finish:task.finish,
         project:{

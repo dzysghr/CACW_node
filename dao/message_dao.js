@@ -17,7 +17,7 @@ function getMessage(user) {
 function sendMessage(me, to, content, type, teamid) {
     return MyModel.Message.create({
         userId: me.id || me,
-        recieverId: to.id || to,
+        receiverId: to.id || to,
         content: content,
         type: type,
         teamid: teamid

@@ -15,7 +15,10 @@ function getMessage(req, res) {
             var mbody = bodymaker.makeMsgArray(msg);
             var body = bodymaker.makeBodyOn(0, '', 'data', mbody);
             res.json(body);
-           // return message_dao.deleteMsgArray(msg);
+            return message_dao.deleteMsgArray(msg);
+        })
+        .then(()=>{
+            
         })
         .catch(err => {
             res.send(bodymaker.makeJson(1, err.message));
@@ -27,19 +30,19 @@ function sendMessage(req, res) {
         res.send(bodymaker.makeJson(1, 'lack param (content)'));
         return;
     }
-    if (req.body.recieverId == undefined) {
-        res.send(bodymaker.makeJson(1, 'lack param (recieverId)'));
+    if (req.body.receiverId == undefined) {
+        res.send(bodymaker.makeJson(1, 'lack param (receiverId)'));
         return;
     }
     account_dao.getUserByReq(req)
         .then(u => {
-            if (u.id == req.body.recieverId)
+            if (u.id == req.body.receiverId)
                 throw new Error('you can send msg to yourself');
             return user_dao
-                .getUserbyId(req.body.recieverId)
+                .getUserbyId(req.body.receiverId)
                 .then(re => {
                     if (!re)
-                        throw new Error('reciever not found');
+                        throw new Error('receiver not found');
                     return message_dao.sendMessage(u,re,req.body.content,3);
                 })
                 .then(m=>{
@@ -51,13 +54,13 @@ function sendMessage(req, res) {
         })
 }
 
-function handleUserMsg(req,res,me,reciever)
+function handleUserMsg(req,res,me,receiver)
 {
     
 }
 
 //过期
-function handleTeamInvite(req, res, me, reciever) {
+function handleTeamInvite(req, res, me, receiver) {
     var team;
     if (req.body.teamid == undefined) {
         throw new Error('lack param (teamid)');
@@ -69,17 +72,17 @@ function handleTeamInvite(req, res, me, reciever) {
             if (t.AdminId != me.id)
                 throw new Error('you can not invite user');
             team = t;
-            return t.hasMember(reciever.id);
+            return t.hasMember(receiver.id);
         })
         .then(has => {
             if (has)
-                throw new Error(reciever.nickName + ' have been a member in this team');
-            return message_dao.sendMessage(me, reciever, req.body.content, req.body.type, req.body.teamid);
+                throw new Error(receiver.nickName + ' have been a member in this team');
+            return message_dao.sendMessage(me, receiver, req.body.content, req.body.type, req.body.teamid);
         })
         .then(m => {
             //创建成功，发送推送
             res.send(bodymaker.makeJson(0, ''));
-            return account_dao.getDeviceIds([req.body.recieverId]);
+            return account_dao.getDeviceIds([req.body.receiverId]);
         })
         .then(deviceids => {
             if (deviceids.length > 0) {
@@ -90,7 +93,7 @@ function handleTeamInvite(req, res, me, reciever) {
 }
 
 //过期
-function handleTeamApply(req, res, me, reciever) {
+function handleTeamApply(req, res, me, receiver) {
     var team;
     if (req.body.teamid == undefined) {
         throw new Error('lack param (teamid)');
@@ -105,12 +108,12 @@ function handleTeamApply(req, res, me, reciever) {
         .then(has => {
             if (has)
                 throw new Error('you have been a member in this team');
-            return message_dao.sendMessage(me, reciever, req.body.content, req.body.type, req.body.teamid);
+            return message_dao.sendMessage(me, receiver, req.body.content, req.body.type, req.body.teamid);
         })
         .then(m => {
             //创建成功，发送推送
             res.send(bodymaker.makeJson(0, ''));
-            return account_dao.getDeviceIds([req.body.recieverId]);
+            return account_dao.getDeviceIds([req.body.receiverId]);
         })
         .then(deviceids => {
             if (deviceids.length > 0) {

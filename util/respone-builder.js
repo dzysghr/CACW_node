@@ -193,7 +193,7 @@ function makeMessage(msg) {
         id:msg.id,
         type:msg.type,
         content:msg.content,
-        sender:{
+        other:{
             id:msg.user.id,
             nickName:msg.user.nickName,
             avatarUrl:msg.user.avatarUrl

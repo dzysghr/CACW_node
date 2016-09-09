@@ -114,7 +114,7 @@ var Message = sequelize.define('message', {
   type: {
     type: Sequelize.INTEGER
   },
-  recieverId:{
+  receiverId:{
      type: Sequelize.INTEGER
   },
   teamid: {

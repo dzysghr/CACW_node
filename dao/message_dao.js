@@ -5,12 +5,11 @@ var Sequelize = MyModel.sequelize;
 function getMessage(user) {
     return MyModel.Message.findAll({
         where: {
-            recieverId: user.id
+            receiverId: user.id
         },
         include: [{
             model: MyModel.User,
            attributes: ['id', 'nickName', 'avatarUrl']
-            
         }]
     })
 }

@@ -112,14 +112,19 @@ var Message = sequelize.define('message', {
     type: Sequelize.STRING
   },
   type: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER //1 团队邀请用户 2 用户申请加入 3 私信
   },
   receiverId:{
      type: Sequelize.INTEGER
   },
+  //用于团队申请或团队邀请，消息为私信时为空
   teamid: {
     type: Sequelize.INTEGER
   }
+  // ,
+  // hasRead:{
+  //   type: Sequelize.INTEGER
+  // }
 },{charset:'utf8'});
 
 //团队定义

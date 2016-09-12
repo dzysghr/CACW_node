@@ -116,7 +116,7 @@ function setTeamInfo(req, res) {
         })
 }
 
-
+//不检查权限
 function getTeamInfo(req, res) {
     var id = req.params.id;
     var team;
@@ -252,6 +252,28 @@ function deleteMemberFromTeam(req, res, memberid, isOut) {
         })
 }
 
+
+function addMember(req,res)
+{
+    account_dao.getUserByReq(req)
+    .then(u=>{
+        return team_dao.getTeamByid(req.params.teamid)
+        .then(t=>{
+            if(!t)
+                throw new Error('team not found');
+            if(t.AdminId!=u.id)
+                 throw new Error('you are not team admin');
+
+            return t.addMember(req.query.memberid);
+        })
+        .then(()=>{
+            res.json(bodymaker.makeBody(0,''));
+        })
+    })
+    .catch(err=>{
+        res.json(bodymaker.makeBody(1,err.message));
+    })
+}
 
 
 function deleteMember(req, res) {
@@ -415,7 +437,7 @@ function getTeamPoject(req, res) {
         })
 }
 
-
+//团队申请
 function teamApply(req, res) {
     if (req.query.tid == undefined) {
         res.json(bodymaker.makeBody(7, 'tid not found in query'));
@@ -434,7 +456,8 @@ function teamApply(req, res) {
                 .then(has => {
                     if (has)
                         throw new Error('you have been a member in this team');
-                    return message_dao.sendMessage(me, team.AdminId, req.query.content, 1, req.query.tid);
+                    var content = '申请加入团队 '+team.teamName+' ,附加消息：'+req.query.content;
+                    return message_dao.sendMessage(me, team.AdminId,content, 1, req.query.tid);
                 })
                 .then(m => {
                     //创建成功，发送推送
@@ -507,5 +530,6 @@ module.exports = {
     deleteMember, leaveTeam,
     dissolveTeam, setTeamAvatar,
     searchTeam, getTeamPoject,
-    teamApply, teamInvite
+    teamApply, teamInvite,
+    addMember
 }

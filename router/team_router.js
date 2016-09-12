@@ -71,8 +71,13 @@ router.post('/:teamid/upload', function (req, res) {
 
 
 //删除团队成员
-router.delete('/:teamid', function (req, res) {
+router.delete('/:teamid/members', function (req, res) {
     team_bll.deleteMember(req,res);
+});
+
+//添加团队成员
+router.post('/:teamid/members', function (req, res) {
+    team_bll.addMember(req,res);
 });
 
 

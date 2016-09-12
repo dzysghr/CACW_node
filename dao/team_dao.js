@@ -111,7 +111,7 @@ function queryTeam(params, limit, offset, except) {
     var where = {
         $or: $or
     }
-    if (except)
+    if (except&&except.length!=0)
         where.id = { $notIn: except };
 
     return MyModel.Team.findAll({

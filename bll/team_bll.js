@@ -261,8 +261,9 @@ function addMember(req,res)
         .then(t=>{
             if(!t)
                 throw new Error('team not found');
-            if(t.AdminId!=u.id)
-                 throw new Error('you are not team admin');
+            // 当表示接受团队的邀请时，t.AdminId!=u.id
+            // if(t.AdminId!=u.id)
+            //      throw new Error('you are not team admin');
 
             return t.addMember(req.query.memberid);
         })
@@ -483,7 +484,6 @@ function teamInvite(req, res) {
         res.json(bodymaker.makeBody(7, 'query params <uid> not found'));
         return;
     }
-
     var to;
     var team;
     account_dao.getUserByReq(req)

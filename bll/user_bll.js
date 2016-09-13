@@ -4,6 +4,7 @@ var account_dao = require('../dao/account_dao');
 var formidable = require('formidable')
 var util = require('../util/md5')
 var fs = require('fs')
+var team_dao = require('../dao/team_dao');
 
 function getUserInfo(req, res) {
     var username = req.params.username;
@@ -51,7 +52,7 @@ function setUserAvator(req, res) {
     account_dao.getUser(req.cookies['sessionId'])
         .then(u => {
             var form = new formidable.IncomingForm();
-            form.uploadDir =  __dirname + "/../image";
+            form.uploadDir = __dirname + "/../image";
             form.encoding = 'utf-8';		//设置编辑
             form.keepExtensions = true;	 //保留后缀
             form.maxFieldsSize = 2 * 1024 * 1024;   //文件大小
@@ -86,6 +87,7 @@ function setUserAvator(req, res) {
         });
 }
 
+//搜索用户
 function searchUser(req, res) {
     if (req.query.query != undefined) {
         var p = {
@@ -111,22 +113,43 @@ function searchUser(req, res) {
         res.json(bodymaker.makebody(1, 'query params not found ,you should set url params like /search?id=xxx'))
         return
     }
-    return  account_dao.getUserByReq(req)
+    return account_dao.getUserByReq(req)
         .then(u => {
-            return user_dao.queryUser(p, req.query.limit, req.query.offset,[u.id])
+            if (req.query.teamid != undefined)
+                return searUserWithoutTeam(req, res, u,p);
+            return user_dao.queryUser(p, req.query.limit, req.query.offset, [u.id])
                 .then(us => {
-                    if (us == undefined)
-                        throw new Error('user not found');
                     var ubody = bodymaker.makeUserInfoArray(us, false);
                     var body = bodymaker.makeBodyOn(0, '', 'data', ubody);
                     res.json(body);
                 })
         })
         .catch(err => {
-            res.json(bodymaker.makebody(1, err.message));
+            res.json(bodymaker.makeBody(1, err.message));
         })
-
-
 }
+
+function searUserWithoutTeam(req, res, u,p) {
+    return team_dao.getTeamByid(req.query.teamid)
+        .then(t => {
+            if (!t)
+                throw new Error('team not found');
+            return t.getMember();
+        })
+        .then(mb => {
+            var ids = [];
+            mb.forEach(i=>{
+                ids.push(i.id);
+            });
+            return user_dao.queryUser(p, req.query.limit, req.query.offset,ids);
+        })
+        .then(us => {
+            var ubody = bodymaker.makeUserInfoArray(us, false);
+            var body = bodymaker.makeBodyOn(0, '', 'data', ubody);
+            res.json(body);
+        });
+}
+
+
 
 module.exports = { getUserInfo, setUserInfo, setUserAvator, searchUser }
